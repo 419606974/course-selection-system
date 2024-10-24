@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"/>
+    <title>权限设置</title>
+    <link rel="icon" href="static/favicon.ico" type="image/ico">
+    <link href="static/css/bootstrap.min.css" rel="stylesheet">
+    <link href="static/css/materialdesignicons.min.css" rel="stylesheet">
+    <link href="static/js/bootstrap-colorpicker/bootstrap-colorpicker.min.css" rel="stylesheet">
+    <link href="static/css/style.min.css" rel="stylesheet">
+    <link href="static/js/jquery-treegrid/jquery.treegrid.min.css" rel="stylesheet">
+</head>
+
+<body>
+<div class="container-fluid p-t-15">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-body">
+                    <form action="#!" method="post" class="site-form">
+                        <div class="form-group">
+                            <label for="role-name">角色名称</label>
+                            <select class="form-control" id="role-name">
+                            </select>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                <tr>
+                                    <th>
+                                        <div class="custom-control custom-checkbox">
+                                            <input type="checkbox" class="custom-control-input" id="check-all">
+                                            <label class="custom-control-label" for="check-all">全选</label>
+                                        </div>
+                                    </th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <!--                                <tr>-->
+                                <!--                                    <td>-->
+                                <!--                                        <div class="custom-control custom-checkbox">-->
+                                <!--                                            <input type="checkbox" name="rules[]"-->
+                                <!--                                                   class="custom-control-input checkbox-parent" id="roleid-1"-->
+                                <!--                                                   dataid="id-1" value="1">-->
+                                <!--                                            <label class="custom-control-label" for="roleid-1">系统管理</label>-->
+                                <!--                                        </div>-->
+                                <!--                                    </td>-->
+                                <!--                                </tr>-->
+                                <tr>
+                                    <td class="p-l-20">
+                                        <div class="custom-control custom-checkbox">
+                                            <input type="checkbox" name="rules[]"
+                                                   class="custom-control-input checkbox-parent checkbox-child"
+                                                   id="roleid-1-1" dataid="id-1-1" value="1">
+                                            <label class="custom-control-label" for="roleid-1-1">数据大屏</label>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="p-l-20">
+                                        <div class="custom-control custom-checkbox">
+                                            <input type="checkbox" name="rules[]"
+                                                   class="custom-control-input checkbox-parent checkbox-child"
+                                                   id="roleid-1-2" dataid="id-1-2" value="2">
+                                            <label class="custom-control-label" for="roleid-1-2">后台首页</label>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="p-l-20">
+                                        <div class="custom-control custom-checkbox">
+                                            <input type="checkbox" name="rules[]"
+                                                   class="custom-control-input checkbox-parent checkbox-child"
+                                                   id="roleid-1-3" dataid="id-1-3" value="3">
+                                            <label class="custom-control-label" for="roleid-1-3">教师管理</label>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="p-l-20">
+                                        <div class="custom-control custom-checkbox">
+                                            <input type="checkbox" name="rules[]"
+                                                   class="custom-control-input checkbox-parent checkbox-child"
+                                                   id="roleid-1-7" dataid="id-1-7" value="4">
+                                            <label class="custom-control-label" for="roleid-1-7">课程管理</label>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="p-l-40">
+                                        <div class="custom-control custom-checkbox custom-control-inline">
+                                            <input type="checkbox" name="rules[]"
+                                                   class="custom-control-input checkbox-child" id="roleid-1-7-51"
+                                                   dataid="id-1-7-51" value="4">
+                                            <label class="custom-control-label"
+                                                   for="roleid-1-7-51">课程管理</label>
+                                        </div>
+                                        <div class="custom-control custom-checkbox custom-control-inline">
+                                            <input type="checkbox" name="rules[]"
+                                                   class="custom-control-input checkbox-child" id="roleid-1-7-52"
+                                                   dataid="id-1-7-52" value="4">
+                                            <label class="custom-control-label"
+                                                   for="roleid-1-7-52">成绩录入</label>
+                                        </div>
+                                        <div class="custom-control custom-checkbox custom-control-inline">
+                                            <input type="checkbox" name="rules[]"
+                                                   class="custom-control-input checkbox-child" id="roleid-1-7-53"
+                                                   dataid="id-1-7-53" value="5">
+                                            <label class="custom-control-label"
+                                                   for="roleid-1-7-53">选课</label>
+                                        </div>
+                                        <div class="custom-control custom-checkbox custom-control-inline">
+                                            <input type="checkbox" name="rules[]"
+                                                   class="custom-control-input checkbox-child" id="roleid-1-7-54"
+                                                   dataid="id-1-7-54" value="5">
+                                            <label class="custom-control-label"
+                                                   for="roleid-1-7-54">我的课程</label>
+                                        </div>
+                                        <div class="custom-control custom-checkbox custom-control-inline">
+                                            <input type="checkbox" name="rules[]"
+                                                   class="custom-control-input checkbox-child" id="roleid-1-7-55"
+                                                   dataid="id-1-7-55" value="5">
+                                            <label class="custom-control-label"
+                                                   for="roleid-1-7-55">成绩查询</label>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="p-l-20">
+                                        <div class="custom-control custom-checkbox">
+                                            <input type="checkbox" name="rules[]"
+                                                   class="custom-control-input checkbox-parent checkbox-child"
+                                                   id="roleid-8-1" dataid="id-8-1" value="6">
+                                            <label class="custom-control-label" for="roleid-8-1">公告管理</label>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="p-l-20">
+                                        <div class="custom-control custom-checkbox">
+                                            <input type="checkbox" name="rules[]"
+                                                   class="custom-control-input checkbox-parent checkbox-child"
+                                                   id="roleid-9-1" dataid="id-9-1" value="7">
+                                            <label class="custom-control-label" for="roleid-9-1">审计日志</label>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="p-l-20">
+                                        <div class="custom-control custom-checkbox">
+                                            <input type="checkbox" name="rules[]"
+                                                   class="custom-control-input checkbox-parent checkbox-child"
+                                                   id="roleid-1-8" dataid="id-1-8" value="8">
+                                            <label class="custom-control-label" for="roleid-1-8">系统工具</label>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="p-l-40">
+                                        <div class="custom-control custom-checkbox custom-control-inline">
+                                            <input type="checkbox" name="rules[]"
+                                                   class="custom-control-input checkbox-child" id="roleid-1-8-40"
+                                                   dataid="id-1-8-40" value="8">
+                                            <label class="custom-control-label" for="roleid-1-8-40">角色管理</label>
+                                        </div>
+                                        <div class="custom-control custom-checkbox custom-control-inline">
+                                            <input type="checkbox" name="rules[]"
+                                                   class="custom-control-input checkbox-child" id="roleid-1-8-41"
+                                                   dataid="id-1-8-41" value="9">
+                                            <label class="custom-control-label" for="roleid-1-8-41">权限管理</label>
+                                        </div>
+                                        <div class="custom-control custom-checkbox custom-control-inline">
+                                            <input type="checkbox" name="rules[]"
+                                                   class="custom-control-input checkbox-child" id="roleid-1-8-42"
+                                                   dataid="id-1-8-42" value="10">
+                                            <label class="custom-control-label" for="roleid-1-8-42">用户管理</label>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <!--                                <tr>-->
+                                <!--                                    <td class="p-l-20">-->
+                                <!--                                        <div class="custom-control custom-checkbox">-->
+                                <!--                                            <input type="checkbox" name="rules[]"-->
+                                <!--                                                   class="custom-control-input checkbox-parent checkbox-child"-->
+                                <!--                                                   id="roleid-1-9" dataid="id-1-9" value="9">-->
+                                <!--                                            <label class="custom-control-label" for="roleid-1-9">权限设置</label>-->
+                                <!--                                        </div>-->
+                                <!--                                    </td>-->
+                                <!--                                </tr>-->
+                                <!--                                <tr>-->
+                                <!--                                    <td class="p-l-40">-->
+                                <!--                                        <div class="custom-control custom-checkbox custom-control-inline">-->
+                                <!--                                            <input type="checkbox" name="rules[]"-->
+                                <!--                                                   class="custom-control-input checkbox-child" id="roleid-1-9-36"-->
+                                <!--                                                   dataid="id-1-9-36" value="36">-->
+                                <!--                                            <label class="custom-control-label" for="roleid-1-9-36">添加规则</label>-->
+                                <!--                                        </div>-->
+                                <!--                                        <div class="custom-control custom-checkbox custom-control-inline">-->
+                                <!--                                            <input type="checkbox" name="rules[]"-->
+                                <!--                                                   class="custom-control-input checkbox-child" id="roleid-1-9-37"-->
+                                <!--                                                   dataid="id-1-9-37" value="37">-->
+                                <!--                                            <label class="custom-control-label" for="roleid-1-9-37">编辑规则</label>-->
+                                <!--                                        </div>-->
+                                <!--                                        <div class="custom-control custom-checkbox custom-control-inline">-->
+                                <!--                                            <input type="checkbox" name="rules[]"-->
+                                <!--                                                   class="custom-control-input checkbox-child" id="roleid-1-9-38"-->
+                                <!--                                                   dataid="id-1-9-38" value="38">-->
+                                <!--                                            <label class="custom-control-label" for="roleid-1-9-38">删除规则</label>-->
+                                <!--                                        </div>-->
+                                <!--                                        <div class="custom-control custom-checkbox custom-control-inline">-->
+                                <!--                                            <input type="checkbox" name="rules[]"-->
+                                <!--                                                   class="custom-control-input checkbox-child" id="roleid-1-9-39"-->
+                                <!--                                                   dataid="id-1-9-39" value="39">-->
+                                <!--                                            <label class="custom-control-label"-->
+                                <!--                                                   for="roleid-1-9-39">禁用/启用规则</label>-->
+                                <!--                                        </div>-->
+                                <!--                                    </td>-->
+                                <!--                                </tr>-->
+                                <!--                                <tr>-->
+                                <!--                                    <td class="p-l-20">-->
+                                <!--                                        <div class="custom-control custom-checkbox">-->
+                                <!--                                            <input type="checkbox" name="rules[]"-->
+                                <!--                                                   class="custom-control-input checkbox-parent checkbox-child"-->
+                                <!--                                                   id="roleid-1-73" dataid="id-1-73" value="73">-->
+                                <!--                                            <label class="custom-control-label" for="roleid-1-73">后台首页</label>-->
+                                <!--                                        </div>-->
+                                <!--                                    </td>-->
+                                <!--                                </tr>-->
+                                </tbody>
+                            </table>
+                        </div>
+                        <button type="submit" class="btn btn-info" id="save-permissions">保存</button>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<!--End 页面主要内容-->
+
+<script type="text/javascript" src="static/js/jquery.min.js"></script>
+<script type="text/javascript" src="static/js/popper.min.js"></script>
+<script type="text/javascript" src="static/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="static/js/perfect-scrollbar.min.js"></script>
+<script type="text/javascript" src="static/js/jquery.cookie.min.js"></script>
+<script type="text/javascript" src="static/js/bootstrap-notify.min.js"></script>
+<script type="text/javascript" src="static/js/bootstrap-multitabs/multitabs.min.js"></script>
+<script type="text/javascript" src="static/js/jquery.cookie.min.js"></script>
+<script type="text/javascript" src="static/js/index.min.js"></script>
+<script type="text/javascript" src="static/js/main.min.js"></script>
+<script type="text/javascript" src="static/js/Chart.min.js"></script>
+<script type="text/javascript" src="static/js/jquery.cookie.min.js"></script>
+<script type="text/javascript" src="static/js/bootstrap-maxlength/bootstrap-maxlength.min.js"></script>
+<script type="text/javascript" src="static/js/jquery-tagsinput/jquery.tagsinput.min.js"></script>
+<!--<script type="text/javascript" src="static/js/bootstrap-table/extensions/export/bootstrap-table-export.min.js"></script>-->
+<script type="text/javascript" src="static/js/jquery-confirm/jquery-confirm.min.js"></script>
+<script type="text/javascript" src="static/js/bootstrap-table/bootstrap-table.min.js"></script>
+<script type="text/javascript" src="static/js/bootstrap-table/locale/bootstrap-table-zh-CN.min.js"></script>
+<script type="text/javascript" src="static/js/jquery-treegrid/jquery.treegrid.min.js"></script>
+<script type="text/javascript"
+        src="static/js/bootstrap-table/extensions/treegrid/bootstrap-table-treegrid.min.js"></script>
+<script type="text/javascript" src="static/js/myutils.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        accessControl();
+        sendPostRequest('/roles', '', function (data) {
+            var select = $('#role-name');
+            $.each(data, function (i, item) {
+                select.append($('<option>', {
+                    value: item.id,
+                    text: item.name
+                }));
+            });
+
+            // 处理保存按钮点击事件
+            $('#save-permissions').click(function () {
+                event.preventDefault(); // 阻止默认的表单提交行为
+                var selectedRoleID = $('#role-name option:selected').val();
+                var selectedValues = [];
+                $('input[type="checkbox"]:checked').each(function () {
+                    if (this.value !== undefined && this.value !== '') {
+                        selectedValues.push(this.value);
+                    }
+                });
+                selectedValues = [...new Set(selectedValues)];
+
+                console.log(selectedValues);
+                sendPostRequest('/permissions/update', {
+                    role: selectedRoleID,
+                    permission_ids: selectedValues
+                }, function (data) {
+                    if (data.success) {
+                        notice(data.message, 'success');
+                    } else {
+                        notice(data.message, 'error');
+                    }
+                }, function (error) {
+                    notice(error.statusMessage, 'error');
+                });
+            });
+
+            // 获取权限 ID 并勾选对应的选项
+            function getPermissionsAndCheckBoxes() {
+                var selectedRoleID = $('#role-name option:selected').val();
+                sendPostRequest('/permissions/query', {role: selectedRoleID}, function (data) {
+                    // 清除所有已选中的权限
+                    $('.checkbox-child').prop('checked', false);
+
+                    // 将权限 ID 字符串分割成数组
+                    var permissionIDs = data.permission_ids.split(',').map(Number);
+
+                    // 根据权限 ID 列表勾选对应的复选框
+                    $.each(permissionIDs, function (i, permissionID) {
+                        $('input[type="checkbox"][value="' + permissionID + '"]').prop('checked', true);
+                    });
+
+                    // 更新父级复选框的状态
+                    updateParentCheckboxState();
+
+                    notice(data.message, 'success');
+                }, function (error) {
+                    console.log('Error loading permissions');
+                    notice(error.statusMessage, 'danger');
+                });
+            }
+
+            // 更新父级复选框的状态
+            function updateParentCheckboxState() {
+                $('.checkbox-child').each(function () {
+                    var dataid = $(this).attr("dataid");
+                    dataid = dataid.substring(0, dataid.lastIndexOf("-"));
+                    var parent = $('input[dataid=' + dataid + ']');
+
+                    if ($(this).is(':checked')) {
+                        parent.prop('checked', true);
+                        while (dataid.lastIndexOf("-") != 2) {
+                            dataid = dataid.substring(0, dataid.lastIndexOf("-"));
+                            parent = $('input[dataid=' + dataid + ']');
+                            parent.prop('checked', true);
+                        }
+                    }
+                });
+            }
+
+            // 当下拉框选择改变时，重新获取权限并更新页面
+            $('#role-name').on('change', function () {
+                getPermissionsAndCheckBoxes();
+            });
+
+            // 动态选择框，上下级选中状态变化
+            $('input.checkbox-parent').on('change', function () {
+                var dataid = $(this).attr("dataid");
+                $('input[dataid^=' + dataid + '-]').prop('checked', $(this).is(':checked'));
+            });
+
+            $('input.checkbox-child').on('change', function () {
+                var dataid = $(this).attr("dataid");
+                dataid = dataid.substring(0, dataid.lastIndexOf("-"));
+                var parent = $('input[dataid=' + dataid + ']');
+                if ($(this).is(':checked')) {
+                    parent.prop('checked', true);
+                    while (dataid.lastIndexOf("-") != 2) {
+                        dataid = dataid.substring(0, dataid.lastIndexOf("-"));
+                        parent = $('input[dataid=' + dataid + ']');
+                        parent.prop('checked', true);
+                    }
+                } else {
+                    if ($('input[dataid^=' + dataid + '-]:checked').length == 0) {
+                        parent.prop('checked', false);
+                        while (dataid.lastIndexOf("-") != 2) {
+                            dataid = dataid.substring(0, dataid.lastIndexOf("-"));
+                            parent = $('input[dataid=' + dataid + ']');
+                            if ($('input[dataid^=' + dataid + '-]:checked').length == 0) {
+                                parent.prop('checked', false);
+                            }
+                        }
+                    }
+                }
+            });
+
+            // 页面加载时初始化权限
+            getPermissionsAndCheckBoxes();
+        }, function () {
+            console.log('Error loading roles');
+        });
+    });
+</script>
+</body>
+</html>

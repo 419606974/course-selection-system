@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
+    <title>用户登录</title>
+    <link rel="shortcut icon" type="image/x-icon" href="static/favicon.ico">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-touch-fullscreen" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <link rel="stylesheet" type="text/css" href="static/css/materialdesignicons.min.css">
+    <link rel="stylesheet" type="text/css" href="static/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="static/css/animate.min.css">
+    <link rel="stylesheet" type="text/css" href="static/css/style.min.css">
+    <style>
+        .login-form .has-feedback {
+            position: relative;
+        }
+
+        .login-form .has-feedback .form-control {
+            padding-left: 36px;
+        }
+
+        .login-form .has-feedback .mdi {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: auto;
+            width: 36px;
+            height: 36px;
+            line-height: 36px;
+            z-index: 4;
+            color: #dcdcdc;
+            display: block;
+            text-align: center;
+            pointer-events: none;
+        }
+
+        .login-form .has-feedback.row .mdi {
+            left: 15px;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+        }
+
+        .footer-links a {
+            color: #333;
+            text-decoration: none;
+        }
+
+        .radio-group {
+            display: flex;
+            justify-content: center;
+            gap: 50px;
+        }
+
+        .custom-control-label {
+            margin-left: 10px;
+            margin-bottom: 10px;
+        }
+
+        .role-select {
+            width: 100%;
+        }
+
+        /* 可能还需要调整下拉菜单的宽度 */
+        .dropdown-menu {
+            min-width: 40%;
+        }
+
+        .rememberme-group {
+            margin-top: 1rem; /* 上方间距 */
+            margin-bottom: 1rem; /* 下方间距 */
+        }
+    </style>
+</head>
+
+<body class="center-vh" style="background-image: url(static/images/background.jpg); background-size: cover;">
+<!--页面loading-->
+<!--<div class="d-flex justify-content-center">-->
+<!--  <div class="spinner-border" role="status">-->
+<!--    <span class="sr-only">Loading...</span>-->
+<!--  </div>-->
+<!--</div>-->
+<!--页面loading end-->
+
+<div class="card card-shadowed p-5 w-420 mb-0 mr-2 ml-2">
+    <div class="text-center mb-3">
+        <a href="/"><h2>选课管理系统</h2></a>
+    </div>
+
+    <form action="#!" method="post" class="login-form">
+        <div class="form-group has-feedback">
+            <span class="mdi mdi-account" aria-hidden="true"></span>
+            <input type="text" class="form-control" id="username" placeholder="请输入用户名">
+        </div>
+
+        <div class="form-group has-feedback">
+            <span class="mdi mdi-lock" aria-hidden="true"></span>
+            <input type="password" class="form-control" id="password" placeholder="请输入密码">
+        </div>
+        <!--        <div class="radio-group">-->
+        <!--            <div class="custom-control custom-radio custom-control-inline">-->
+        <!--                <input type="radio" id="role1" name="roleRadio" class="custom-control-input" value="1">-->
+        <!--                <label class="custom-control-label" for="role1">管理员</label>-->
+        <!--            </div>-->
+        <!--            <div class="custom-control custom-radio custom-control-inline">-->
+        <!--                <input type="radio" id="role2" name="roleRadio" class="custom-control-input" value="2">-->
+        <!--                <label class="custom-control-label" for="role2">教师</label>-->
+        <!--            </div>-->
+        <!--            <div class="custom-control custom-radio custom-control-inline">-->
+        <!--                <input type="radio" id="role3" name="roleRadio" class="custom-control-input" value="3">-->
+        <!--                <label class="custom-control-label" for="role3">学生</label>-->
+        <!--            </div>-->
+        <!--        </div>-->
+        <div class="btn-group role-select">
+            <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
+                    aria-expanded="false">
+                请选择角色
+            </button>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="#!">管理员</a></li>
+                <li><a class="dropdown-item" href="#!">教师</a></li>
+                <li><a class="dropdown-item" href="#!">学生</a></li>
+            </ul>
+        </div>
+        <div class="form-group rememberme-group">
+            <div class="custom-control custom-checkbox">
+                <input type="checkbox" class="custom-control-input" id="rememberme">
+                <label class="custom-control-label not-user-select" for="rememberme">记住用户名和密码</label>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <button class="btn btn-block btn-success" type="submit">立即登录</button>
+        </div>
+    </form>
+
+    <div class="footer-links">
+        <p class="text-muted mb-0"><a href="/register">还没有账号？</a></p>
+        <p class="text-muted mb-0"><a href="/resetpassword">找回密码</a></p>
+
+    </div>
+    <!--    <p class="text-center text-muted mb-0">Copyright © 2024 <a href="mailto:xxxx@qq.com">tygk</a>. All right-->
+    <!--        reserved</p>-->
+</div>
+
+<script type="text/javascript" src="static/js/jquery.min.js"></script>
+<script type="text/javascript" src="static/js/main.min.js"></script>
+<script type="text/javascript" src="static/js/popper.min.js"></script>
+<script type="text/javascript" src="static/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="static/js/bootstrap-notify.min.js"></script>
+<script type="text/javascript" src="static/js/lyear-loading.js"></script>
+<script type="text/javascript" src="static/js/myutils.js"></script>
+<script type="text/javascript">;</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+
+        var roleId;
+        $('.dropdown-menu').on('click', 'a', function (e) {
+            var role = $(this).text();
+            e.preventDefault(); // 阻止默认行为
+            var role = $(this).text();
+            switch (role) {
+                case '管理员':
+                    roleId = 1;
+                    break;
+                case '教师':
+                    roleId = 2;
+                    break;
+                case '学生':
+                    roleId = 3;
+                    break;
+            }
+            $('.dropdown-toggle').text(role);
+        });
+
+        // 获取表单元素
+        const loginForm = document.querySelector('.login-form');
+        const rememberMeCheckbox = document.getElementById('rememberme');
+        // 检查是否需要记住用户名和密码
+        const rememberMe = rememberMeCheckbox.checked || localStorage.getItem('rememberMe') === 'true';
+
+        // 如果需要记住，则填充表单
+        if (rememberMe) {
+            document.getElementById('username').value = localStorage.getItem('username') || '';
+            document.getElementById('password').value = localStorage.getItem('password') || '';
+            rememberMeCheckbox.checked = true;
+        }
+        // 添加事件监听器
+        loginForm.addEventListener('submit', function (event) {
+            event.preventDefault(); // 阻止默认的表单提交行为
+
+            // 获取表单数据
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            if (username.length == 0 || password.length == 0) {
+                notice('用户名或密码不能为空', 'warning');
+                return;
+            }
+
+            // 更新记住登录状态
+            const rememberMe = rememberMeCheckbox.checked;
+            if (rememberMe) {
+                localStorage.setItem('username', username);
+                localStorage.setItem('password', password);
+                localStorage.setItem('rememberMe', 'true');
+            } else {
+                localStorage.setItem('username', username);
+                localStorage.removeItem('password');
+                localStorage.removeItem('rememberMe');
+            }
+
+            // var radios = document.getElementsByName('roleRadio');
+            // var selectRole = null;
+            // for (var i = 0; i < radios.length; i++) {
+            //     if (radios[i].checked) {
+            //         selectRole = radios[i].value;
+            //         break;
+            //     }
+            // }
+            // if (selectRole == null) {
+            //     notice('请选择角色', 'danger');
+            //     return;
+            // }
+            if (roleId == null) {
+                notice('请选择角色', 'danger');
+                return;
+            }
+            // 先获取用户权限后再登录
+            sendPostRequest('/permissions/query', {role: roleId}, function (data) {
+                if (data.success) {
+                    localStorage.setItem('permissionIds', data.permission_ids);
+                    loadingMessage();
+                    sendPostRequest('/login', {
+                        username: username,
+                        password: password,
+                        role: roleId
+                    }, function (data) {
+                        if (data.success) {
+                            localStorage.setItem('role', roleId);
+                            // 登录成功，跳转到主页或其他页面
+                            notice(data.message, 'success');
+                            window.location.href = '/dashboard';
+
+                        } else {
+                            // 显示错误消息
+                            notice(data.message, 'danger');
+                        }
+                    }, function (error) {
+                        notice(error.statusMessage, 'danger');
+                    })
+                } else {
+                    notice(data.message, 'danger');
+                }
+            }, function (error) {
+                notice(error.statusMessage, 'danger');
+            });
+
+
+        });
+    });
+</script>
+</body>
+</html>

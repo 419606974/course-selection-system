@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
+    <title>成绩查询</title>
+    <link rel="shortcut icon" type="image/x-icon" href="static/favicon.ico">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-touch-fullscreen" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <link rel="stylesheet" type="text/css" href="static/css/materialdesignicons.min.css">
+    <link rel="stylesheet" type="text/css" href="static/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="static/js/bootstrap-multitabs/multitabs.min.css">
+    <link rel="stylesheet" type="text/css" href="static/css/animate.min.css">
+    <link rel="stylesheet" type="text/css" href="static/css/style.min.css">
+
+</head>
+<style>
+    /* 默认的搜索框 */
+    .lyear-search {
+        position: relative;
+        z-index: 0;
+        display: -webkit-inline-box;
+        display: inline-flex;
+    }
+
+    .lyear-search input {
+        width: 300px;
+        padding-left: 35px;
+        -webkit-transition: .5s;
+        transition: .5s;
+    }
+
+    #btn_delete {
+        margin-left: 10px;
+    }
+
+</style>
+<body>
+
+<!--页面主要内容-->
+
+<div class="container-fluid p-t-15">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-body">
+                    <div id="toolbar" class="toolbar-btn-action">
+                        <div class="row">
+                            <div class="col-md-6 text-right search-group">
+                                <!-- 搜索按钮和输入框 -->
+                                <div class="form-group">
+                                    <form class="lyear-search lyear-search-left lyear-search-rounder">
+                                        <div class="input-group">
+                                            <label for="course-name-query" style="margin-top: 5px">课程名字: </label>
+                                            <select class="form-control" id="course-name-query"
+                                                    style="width: 400px; margin-left: 20px;margin-right: 20px;">
+                                            </select>
+                                            <div class="input-group-btn">
+                                                <button id="btn_search" type="button" class="btn btn-success mr-2">
+                                                    <i class="mdi mdi-magnify"></i>搜索
+                                                </button>
+                                                <a class="btn btn-default reset-btn"><i class="mdi mdi-restore"></i>重置</a>
+                                            </div>
+
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <table id="tb_departments">
+                        <thead class="thead-dark">
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--End 页面主要内容-->
+
+<script type="text/javascript" src="static/js/jquery.min.js"></script>
+<script type="text/javascript" src="static/js/popper.min.js"></script>
+<script type="text/javascript" src="static/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="static/js/perfect-scrollbar.min.js"></script>
+<script type="text/javascript" src="static/js/jquery.cookie.min.js"></script>
+<script type="text/javascript" src="static/js/bootstrap-notify.min.js"></script>
+<script type="text/javascript" src="static/js/bootstrap-multitabs/multitabs.min.js"></script>
+<script type="text/javascript" src="static/js/jquery.cookie.min.js"></script>
+<script type="text/javascript" src="static/js/index.min.js"></script>
+<script type="text/javascript" src="static/js/main.min.js"></script>
+<script type="text/javascript" src="static/js/Chart.min.js"></script>
+<script type="text/javascript" src="static/js/jquery.cookie.min.js"></script>
+<script type="text/javascript" src="static/js/bootstrap-maxlength/bootstrap-maxlength.min.js"></script>
+<script type="text/javascript" src="static/js/jquery-tagsinput/jquery.tagsinput.min.js"></script>
+<script type="text/javascript" src="static/js/jquery-confirm/jquery-confirm.min.js"></script>
+<script type="text/javascript" src="static/js/bootstrap-table/bootstrap-table.min.js"></script>
+<script type="text/javascript" src="static/js/bootstrap-table/locale/bootstrap-table-zh-CN.min.js"></script>
+<script type="text/javascript" src="static/js/jquery-treegrid/jquery.treegrid.min.js"></script>
+<script type="text/javascript"
+        src="static/js/bootstrap-table/extensions/treegrid/bootstrap-table-treegrid.min.js"></script>
+<script type="text/javascript" src="static/js/myutils.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        accessControl();
+        // 获取课程名填充添加成绩模态框下拉菜单
+        sendPostRequest('/course', '', function (data) {
+            var select = $('#course-name-query');
+            $.each(data, function (i, item) {
+                select.append($('<option>', {
+                    value: item.id,
+                    text: item.name
+                }));
+            });
+        }, function () {
+            console.log('Error loading course');
+        });
+        // 在页面加载完成后，从模板上下文中获取 teacher_infos 变量
+        var scoreInfos = {{score_infos | tojson}};
+        // 向后端获取数据填充table
+        $('#tb_departments').bootstrapTable({
+            data: scoreInfos,
+            classes: 'table table-bordered table-hover table-striped',
+            dataType: 'jsonp',            // 因为本示例中是跨域的调用,所以涉及到ajax都采用jsonp,
+            uniqueId: 'id',
+            idField: 'id',              // 每行的唯一标识字段
+            toolbar: '#toolbar',        // 工具按钮容器
+            clickToSelect: false,       // 是否启用点击选中行
+            striped: true,              // 是否显示行间隔色
+            showColumns: true,         // 是否显示所有的列
+            showRefresh: false,         // 是否显示刷新按钮,这个按钮这一般是在客户端分页的情况下使用
+            showToggle: false,          // 是否显示详细视图和列表视图的切换按钮(clickToSelect同时设置为true时点击会报错)
+            cache: false,               // 不缓存数据
+            pagination: true,                    // 是否显示分页
+            sortOrder: "asc",                    // 排序方式
+            // 传递参数
+            queryParams: function (params) {
+                var temp = {
+                    limit: params.limit,         // 每页数据量
+                    offset: params.offset,       // sql语句起始索引
+                    page: (params.offset / params.limit) + 1,
+                    sort: params.sort,           // 排序的列名
+                    sortOrder: params.order      // 排序方式'asc' 'desc'
+                };
+                return temp;
+            },
+            sidePagination: "client",            // 分页方式：client客户端分页，server服务端分页
+            pageNumber: 1,                       // 初始化加载第一页，默认第一页
+            pageSize: 10,                        // 每页的记录行数
+            pageList: [10, 20, 50, 100],         // 可供选择的每页的行数
+            search: false,                      // 是否显示表格搜索，此搜索是客户端搜索
+            columns: [{
+                field: 'example',
+                checkbox: true    // 是否显示复选框
+            }, {
+                field: 'id', //columns里的field的值必须和后端返回的字段名一样
+                title: 'ID', //columns里的title的值就是表格列名
+                sortable: true,    // 是否排序
+                align: 'center',
+            }, {
+                field: 'course_name',
+                title: '课程名',
+                align: 'center',
+            }, {
+                field: 'student_name',
+                title: '学生姓名',
+                align: 'center',
+
+            }, {
+                field: 'score',
+                title: '成绩',
+                align: 'center',
+            }],
+
+            onLoadSuccess: function (data) {
+                $("[data-toggle='tooltip']").tooltip();
+
+
+            }
+        })
+        $('#tb_departments').bootstrapTable('hideLoading'); // 手动关闭加载提示
+
+    });
+
+
+    $(function () {
+        // 初始化表格
+        $('#tb_departments').bootstrapTable({
+            columns: [
+                {
+                    field: 'state',
+                    checkbox: true,
+                },
+                {
+                    field: 'id',
+                    title: 'ID',
+                },
+                {
+                    field: 'course_name',
+                    title: 'course_name',
+                },
+                // 其他列...
+            ],
+            // 其他配置...
+        });
+
+        // 查询按钮添加点击事件
+        $('#btn_search').click(function () {
+            // 获取查询输入框的内容
+            var courseId = $('#course-name-query').val();
+            // 发起 AJAX 请求
+            $.getJSON('/score?query=' + encodeURIComponent(courseId), function (data) {
+                // 使用 bootstrapTable('load', data.rows) 更新表格
+                $('#tb_departments').bootstrapTable('load', data);
+            });
+        });
+
+        // 重置按钮添加点击事件
+        $('.reset-btn').click(function () {
+            // 发起 AJAX 请求
+            $.getJSON('/score?query=all', function (data) {
+                // 使用 bootstrapTable('load', data.rows) 更新表格
+                $('#tb_departments').bootstrapTable('load', data);
+            });
+        });
+
+    });
+
+</script>
+</body>
+</html>

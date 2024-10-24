@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"/>
+    <title>角色管理</title>
+    <link rel="icon" href="static/favicon.ico" type="image/ico">
+    <link href="static/css/bootstrap.min.css" rel="stylesheet">
+    <link href="static/css/materialdesignicons.min.css" rel="stylesheet">
+    <link href="static/js/bootstrap-colorpicker/bootstrap-colorpicker.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="static/js/jquery-confirm/jquery-confirm.min.css">
+    <link href="static/css/style.min.css" rel="stylesheet">
+    <link href="static/js/jquery-treegrid/jquery.treegrid.min.css" rel="stylesheet">
+</head>
+
+<body>
+<div class="container-fluid p-t-15">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-body">
+                    <div id="toolbar" class="toolbar-btn-action">
+                        <button id="btn_add" type="button" class="btn btn-info" data-toggle="modal"
+                                data-target="#exampleModalChange"><span class="mdi mdi-plus"
+                                                                        aria-hidden="true"></span>新增角色
+                        </button>
+                        <!--            这里是模拟一个弹出框添加条目-->
+                        <div class="modal fade" id="exampleModalChange" tabindex="-1" role="dialog"
+                             aria-labelledby="exampleModalChangeLabel" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h6 class="modal-add-title" id="exampleModalChangeTitle"></h6>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form>
+                                            <div class="form-group">
+                                                <label for="role-add-name" class="col-form-label">角色名称</label>
+                                                <input type="text" class="form-control" id="role-add-name">
+                                            </div>
+                                            <div id="error_message1" style="color: red"></div>
+                                            <div class="form-group">
+                                                <label for="role-add-description"
+                                                       class="col-form-label">描述</label>
+                                                <textarea class="form-control" id="role-add-description"
+                                                          maxlength="256"></textarea>
+                                            </div>
+
+                                        </form>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭
+                                        </button>
+                                        <button type="button" id="btn-add" class="btn btn-primary">保存</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!--这里是一个编辑条目的模态框-->
+                        <div class="modal fade" id="exampleModalEdit" tabindex="-1" role="dialog"
+                             aria-labelledby="exampleModalChangeLabel" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h6 class="modal-edit-title" id="exampleModalEditTitle"></h6>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form>
+                                            <div class="form-group">
+                                                <label for="role-edit-name" class="col-form-label">角色名称</label>
+                                                <input type="text" class="form-control" id="role-edit-name">
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label for="role-edit-description"
+                                                       class="col-form-label">描述</label>
+                                                <textarea class="form-control"
+                                                          id="role-edit-description"></textarea>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">取消
+                                        </button>
+                                        <button type="button" id="btn-edit-save" class="btn btn-primary">保存
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button id="btn_delete" type="button" class="btn btn-danger">
+                            <span class="mdi mdi-window-close" aria-hidden="true"></span>批量删除
+                        </button>
+                    </div>
+                    <table id="tb_departments">
+                        <thead class="thead-dark">
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--End 页面主要内容-->
+
+
+<script type="text/javascript" src="static/js/jquery.min.js"></script>
+<script type="text/javascript" src="static/js/popper.min.js"></script>
+<script type="text/javascript" src="static/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="static/js/perfect-scrollbar.min.js"></script>
+<script type="text/javascript" src="static/js/jquery.cookie.min.js"></script>
+<script type="text/javascript" src="static/js/bootstrap-notify.min.js"></script>
+<script type="text/javascript" src="static/js/bootstrap-multitabs/multitabs.min.js"></script>
+<script type="text/javascript" src="static/js/jquery.cookie.min.js"></script>
+<script type="text/javascript" src="static/js/index.min.js"></script>
+<script type="text/javascript" src="static/js/main.min.js"></script>
+<script type="text/javascript" src="static/js/Chart.min.js"></script>
+<script type="text/javascript" src="static/js/jquery.cookie.min.js"></script>
+<script type="text/javascript" src="static/js/bootstrap-maxlength/bootstrap-maxlength.min.js"></script>
+<script type="text/javascript" src="static/js/jquery-tagsinput/jquery.tagsinput.min.js"></script>
+<!--<script type="text/javascript" src="static/js/bootstrap-table/extensions/export/bootstrap-table-export.min.js"></script>-->
+<script type="text/javascript" src="static/js/jquery-confirm/jquery-confirm.min.js"></script>
+<script type="text/javascript" src="static/js/bootstrap-table/bootstrap-table.min.js"></script>
+<script type="text/javascript" src="static/js/bootstrap-table/locale/bootstrap-table-zh-CN.min.js"></script>
+<script type="text/javascript" src="static/js/jquery-treegrid/jquery.treegrid.min.js"></script>
+<script type="text/javascript"
+        src="static/js/bootstrap-table/extensions/treegrid/bootstrap-table-treegrid.min.js"></script>
+<script type="text/javascript" src="static/js/myutils.js"></script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        accessControl();
+        // 在页面加载完成后，从模板上下文中获取 role_infos 变量
+        var roleInfos = {{role_infos | tojson}};
+        // 向后端获取数据填充table
+        $('#tb_departments').bootstrapTable({
+            data: roleInfos,
+            classes: 'table table-bordered table-hover table-striped',
+            // url: 'http://127.0.0.1:5000/role',
+            // method: 'get',
+            // dataType: 'jsonp',        // 因为本示例中是跨域的调用,所以涉及到ajax都采用jsonp,
+            uniqueId: 'id',
+            idField: 'id',             // 每行的唯一标识字段
+            toolbar: '#toolbar',       // 工具按钮容器
+            clickToSelect: false,     // 是否启用点击选中行
+            showColumns: true,         // 是否显示所有的列
+            showRefresh: false,         // 是否显示刷新按钮
+
+            showToggle: false,        // 是否显示详细视图和列表视图的切换按钮(clickToSelect同时设置为true时点击会报错)
+
+            pagination: true,                    // 是否显示分页
+            sortOrder: "asc",                    // 排序方式
+            // queryParams: function (params) {
+            //     var temp = {
+            //         limit: params.limit,         // 每页数据量
+            //         offset: params.offset,       // sql语句起始索引
+            //         page: (params.offset / params.limit) + 1,
+            //         sort: params.sort,           // 排序的列名
+            //         sortOrder: params.order      // 排序方式'asc' 'desc'
+            //     };
+            //     return temp;
+            // },                                   // 传递参数
+            sidePagination: "client",            // 分页方式：client客户端分页，server服务端分页
+            pageNumber: 1,                       // 初始化加载第一页，默认第一页
+            pageSize: 10,                        // 每页的记录行数
+            pageList: [10, 20, 50, 100],         // 可供选择的每页的行数
+            search: true,                      // 是否显示表格搜索，此搜索是客户端搜索
+            //
+            // showExport: true,        // 是否显示导出按钮, 导出功能需要导出插件支持(tableexport.min.js)
+            // exportDataType: "basic", // 导出数据类型, 'basic':当前页, 'all':所有数据, 'selected':选中的数据
+
+            columns: [{
+                field: 'example',
+                checkbox: true    // 是否显示复选框
+            }, {
+                field: 'id', //columns里的field的值必须和后端返回的字段名一样
+                title: 'ID', //columns里的title的值就是表格列名
+                sortable: true,    // 是否排序
+                align: 'center',
+            }, {
+                field: 'name',
+                title: '角色名',
+                align: 'center',
+            }, {
+                field: 'permission_ids',
+                title: '权限列表',
+                align: 'center',
+            }, {
+                field: 'description',
+                title: '备注',
+                align: 'center',
+            }, {
+                field: 'operate',
+                title: '操作',
+                align: 'center',
+                formatter: btnHandle,  // 自定义方法
+                events: {
+                    'click .edit-btn': function (event, value, row, index) {
+                        editRole(row);
+                    },
+                    'click .del-btn': function (event, value, row, index) {
+                        deleteRole(row);
+                    }
+                }
+            }],
+            onLoadSuccess: function (data) {
+
+                $("[data-toggle='tooltip']").tooltip();
+
+            }
+        });
+        $('#tb_departments').bootstrapTable('hideLoading'); // 手动关闭加载提示
+
+    });
+
+    $(function () {
+
+        // 添加角色
+        $('#btn-add').click(function () {
+            var roleName = $('#role-add-name').val();
+            var description = $('#role-add-description').val();
+            if (!validateStringLength(roleName, 1, 32)) {
+                document.getElementById("error_message1").textContent = "角色名称不能为空";
+                return;
+            }
+            ;
+            sendPostRequest('/role/add', {
+                name: roleName,
+                description: description
+            }, function (data) {
+                if (data.success) {
+                    // 前端更新表格数据，添加该条目（仅仅是前端更新）
+                    $('#tb_departments').bootstrapTable('append', {
+                        name: roleName,
+                        description: description,
+
+                    });
+                    notice(data.message, 'success');
+
+                } else {
+                    notice(data.message, 'danger');
+                }
+            }, function (error) {
+                console.error('Error:', error);
+                notice(error.statusMessage, 'danger');
+            });
+            // 关闭模态框
+            $('#exampleModalChange').modal('hide');
+        }),
+            // 初始化表格
+            $('#tb_departments').bootstrapTable({
+                columns: [
+                    {
+                        field: 'state',
+                        checkbox: true,
+                    },
+                    {
+                        field: 'id',
+                        title: 'ID',
+                    },
+                    {
+                        field: 'name',
+                        title: 'Name',
+                    },
+                    // 其他列...
+                ],
+                // 其他配置...
+            });
+
+        // 为批量删除按钮添加点击事件
+        $('#btn_delete').click(function () {
+            var selectedRows = $('#tb_departments').bootstrapTable('getSelections');
+            if (selectedRows.length == 0) {
+                notice("请至少选择一行", 'warning');
+                return;
+            }
+            var selectedIds = [];
+
+            // 遍历所有选中的行，并收集它们的ID值
+            $.each(selectedRows, function (index, row) {
+                selectedIds.push(row.id);
+            });
+            // 输出选中的ID值
+            // console.log(selectedIds);
+            // 发送 AJAX 请求
+            sendPostRequest('/role/delete', {ids: selectedIds}, function (data) {
+                if (data.success) {
+                    // 成功删除后，从表格中移除对应的条目
+                    $('#tb_departments').bootstrapTable('remove', {
+                        field: 'id',
+                        values: selectedIds
+                    });
+                    $('#tb_departments').bootstrapTable('refresh');
+                    notice(data.message, 'success');
+                } else {
+                    // 显示错误消息
+                    notice(data.message, 'error');
+                }
+            }, function (error) {
+                console.error('Error:', error);
+                notice('服务端错误', 'danger');
+
+            });
+
+        });
+    });
+
+    // 添加条目弹出框
+    $('#exampleModalChange').on('show.bs.modal', function (event) {
+        var button = $(event.relatedTarget);
+        var recipient = button.data('whatever');
+        var modal = $(this);
+        modal.find('.modal-add-title').text('添加条目');
+    });
+
+
+    // 操作按钮
+    function btnHandle() {
+        let html =
+            '<a href="#!" class="btn btn-xs btn-default m-r-5 edit-btn" title="编辑" data-toggle="tooltip"><i class="mdi mdi-pencil"></i></a>' +
+            '<a href="#!" class="btn btn-xs btn-default del-btn" title="删除" data-toggle="tooltip"><i class="mdi mdi-window-close"></i></a>';
+        return html;
+    }
+
+    // 操作方法 - 编辑条目弹出框
+    function editRole(row) {
+        // 填充模态框中的表单
+        $('#exampleModalEdit #exampleModalEditTitle').text('编辑条目');
+        $('#exampleModalEdit #role-edit-name').val(row.name);
+        $('#exampleModalEdit #role-edit-name').prop('disabled', true);
+        $('#exampleModalEdit #role-edit-description').val(row.description);
+        // 存储当前行的 id
+        var currentRowId = row.id;
+        // 显示模态框
+        $('#exampleModalEdit').modal('show');
+
+        // 将 id 作为数据附加到保存按钮上
+        $('#btn-edit-save').data('current-row-id', currentRowId);
+    }
+
+    // 编辑角色保存
+    $('#btn-edit-save').click(function () {
+        // 从按钮数据中获取当前行的 id
+        var currentRowId = $(this).data('current-row-id');
+        var roleName = $('#exampleModalEdit #role-edit-name').val();
+        var description = $('#exampleModalEdit #role-edit-description').val();
+
+        sendPostRequest('/role/update', {
+            name: roleName,
+            description: description
+        }, function (data) {
+            if (data.success) {
+                notice(data.message, 'success');
+                // 前端更新表格数据，添加该条目（仅仅是前端更新）
+                $('#tb_departments').bootstrapTable('updateRow', {
+                    index: currentRowId - 1, // 使用 id 获取行索引
+                    row: {
+                        id: currentRowId, // 使用获取到的 id
+                        name: roleName,
+                        description: description
+                    }
+                });
+            } else {
+                notice(data.message, 'danger');
+
+            }
+        }, function (error) {
+            console.error('Error:', error);
+            notice('服务端错误', 'danger');
+
+        });
+        // 提交后关闭模态框
+        $('#exampleModalEdit').modal('hide');
+    });
+
+    // 操作方法 - 删除单个条目
+    function deleteRole(row) {
+        var selectedRows = $('#tb_departments').bootstrapTable('getSelections');
+        var rowId = selectedRows[0].id;
+        // 确认是否删除
+        $.confirm({
+            title: '操作确认',
+            escapeKey: true,
+            content: '确定要删除此条目吗?',
+            backgroundDismiss: true,
+            buttons: {
+                okay: {
+                    text: '确认',
+                    keys: ['enter'],
+                    btnClass: 'btn-blue',
+                    action: function () {
+                        // 发送 DELETE 请求到后端
+                        sendPostRequest('/role/delete', {id: rowId}, function (data) {
+                            if (data.success) {
+                                // 成功删除后，从表格中移除对应的条目
+                                $('#tb_departments').bootstrapTable('remove', {
+                                    field: 'id',
+                                    values: [rowId]
+                                });
+                                notice(data.message, 'success');
+                            } else {
+                                console.error(data.message);
+                                notice(data.message, 'error');
+                            }
+                        }, function (error) {
+                            console.error('Error:', error);
+                            notice(error.statusMessage, 'error');
+                        });
+                    }
+                },
+                cancel: {
+                    text: '取消',
+                    keys: ['ctrl', 'shift'],
+                    action: function () {
+                        return;
+                    }
+                }
+            },
+        });
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"/>
+    <title>数据大屏</title>
+    <link rel="icon" href="static/favicon.ico" type="image/ico">
+    <link href="static/css/bootstrap.min.css" rel="stylesheet">
+    <link href="static/css/materialdesignicons.min.css" rel="stylesheet">
+    <link href="static/css/style.min.css" rel="stylesheet">
+</head>
+<style>
+    body {
+        background-color: #f8f9fa; /* 设置背景颜色 */
+    }
+    .container-fluid {
+        padding-top: 15px;
+    }
+    .chart-container {
+        height: 300px;
+    }
+    .chart-container canvas {
+        height: 100%;
+    }
+    .card {
+        margin-bottom: 1rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* 添加阴影 */
+        transition: transform 0.2s ease-in-out; /* 添加过渡效果 */
+    }
+    .card:hover {
+        transform: translateY(-5px); /* 鼠标悬停时卡片上升 */
+    }
+    .card-header {
+        font-size: 1.2rem;
+        font-weight: bold;
+    }
+    .card-title {
+        font-size: 1.4rem;
+        margin-bottom: 0.5rem;
+    }
+    .card-body {
+        padding: 1.5rem;
+    }
+    .flex-box {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    .img-avatar {
+        border-radius: 50%;
+        overflow: hidden;
+        margin-right: 1rem;
+    }
+    .fs-22 {
+        font-size: 22px;
+    }
+    .lh-22 {
+        line-height: 22px;
+    }
+    .text-right {
+        text-align: right;
+    }
+</style>
+<body>
+<div class="container-fluid p-t-15">
+
+    <div class="row">
+        <div class="col-md-6 col-xl-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body clearfix">
+                    <div class="flex-box">
+                        <span class="img-avatar img-avatar-48 bg-translucent"><i class="mdi mdi-teach fs-22"></i></span>
+                        <span class="fs-22 lh-22">{{teacher_number}}</span>
+                    </div>
+                    <div class="text-right">教师数量</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-xl-3">
+            <div class="card bg-danger text-white">
+                <div class="card-body clearfix">
+                    <div class="flex-box">
+                        <span class="img-avatar img-avatar-48 bg-translucent"><i
+                                class="mdi mdi-account fs-22"></i></span>
+                        <span class="fs-22 lh-22">{{user_number}}</span>
+                    </div>
+                    <div class="text-right">用户总数</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-xl-3">
+            <div class="card bg-success text-white">
+                <div class="card-body clearfix">
+                    <div class="flex-box">
+                        <span class="img-avatar img-avatar-48 bg-translucent"><i
+                                class="mdi mdi-arrow-down-bold fs-22"></i></span>
+                        <span class="fs-22 lh-22">{{course_number}}</span>
+                    </div>
+                    <div class="text-right">开设课程数量</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-xl-3">
+            <div class="card bg-purple text-white">
+                <div class="card-body clearfix">
+                    <div class="flex-box">
+                        <span class="img-avatar img-avatar-48 bg-translucent"><i
+                                class="mdi mdi-message fs-22"></i></span>
+                        <span class="fs-22 lh-22">{{notice_number}} 条</span>
+                    </div>
+                    <div class="text-right">公告数量</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">热门课程排行</div>
+                </div>
+                <div class="card-body chart-container">
+                    <canvas class="js-chartjs-bars"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">教师课程数量饼图</div>
+                </div>
+                <div class="card-body">
+                    <canvas class="js-chartjs-pies"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">教师职级数量分布图</div>
+                </div>
+                <div class="card-body">
+                    <canvas class="js-chartjs-pies1"></canvas>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<script type="text/javascript" src="static/js/jquery.min.js"></script>
+<script type="text/javascript" src="static/js/popper.min.js"></script>
+<script type="text/javascript" src="static/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="static/js/main.min.js"></script>
+<script type="text/javascript" src="static/js/Chart.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function (e) {
+        //获取 <canvas> 元素的 2D 渲染上下文
+        var $dashChartBarsCnt = jQuery('.js-chartjs-bars')[0].getContext('2d'),
+            $dashChartPiesCnt = jQuery('.js-chartjs-pies')[0].getContext('2d'),
+            $dashChartPiesCnt1 = jQuery('.js-chartjs-pies1')[0].getContext('2d');
+        // $dashChartLinesCnt = jQuery('.js-chartjs-lines')[0].getContext('2d');
+        // 获取从后端传递过来的数据
+        var courseCountByTeacher = {{courseCountByTeacher | tojson}};
+        var courseCountByStudent = {{courseCountByStudent | tojson}};
+        var teacherRankCount = {{teacherRankCount | tojson}};
+        // 提取数据
+
+        var labels1 = courseCountByStudent.map(item => item.course_name);
+        var dataValues1 = courseCountByStudent.map(item => item.selected_stu_num);
+
+        var labels2 = courseCountByTeacher.map(item => item.teacher_name);
+        var dataValues2 = courseCountByTeacher.map(item => item.course_count);
+
+
+        const rankMap = {
+            1: '讲师',
+            2: '副教授',
+            3: '教授'
+        };
+        var labels3 = teacherRankCount.map(item => rankMap[item.rank]);
+        var dataValues3 = teacherRankCount.map(item => item.count);
+
+        //柱状图数据
+        var $dashChartBarsData = {
+            labels: labels1,
+            datasets: [
+                {
+                    label: '课程选课人数',
+                    borderWidth: 1,
+                    borderColor: 'rgba(0, 0, 0, 0)',
+                    backgroundColor: 'rgba(51, 202, 185, 0.5)',
+                    hoverBackgroundColor: "rgba(51, 202, 185, 0.7)",
+                    hoverBorderColor: "rgba(0, 0, 0, 0)",
+                    data: dataValues1,
+                }
+            ],
+            options: {
+                responsive: true,  // 图表会根据其容器的尺寸变化而自动调整其大小
+                maintainAspectRatio: false,  // 图表的高度和宽度比例不会被保持
+                scales: {
+                    y: {
+                        beginAtZero: true, // 是否从零开始
+                        ticks: {
+                            min: 0, // 最小值
+                            max: 50, // 最大值
+                            stepSize: 1, // 刻度步长
+                            callback: function(value, index, values) {
+                                // 自定义刻度标签的显示方式
+                                return value + '人';
+                            }
+                        }
+                    }
+                }
+            }
+        };
+
+        // var $dashChartPiesData = {
+        //     labels: labels2,
+        //     datasets: [
+        //         {
+        //             label: labels2,
+        //             data: dataValues2,
+        //             backgroundColor: [
+        //                 'rgba(51, 202, 185, 0.5)',
+        //                 'rgba(0, 0 ,225, 0.5)',
+        //                 'rgba(255, 206, 86, 1)'
+        //             ],
+        //             borderColor: [
+        //                 'rgba(255, 99, 132, 1)',
+        //                 'rgba(54, 162, 235, 1)',
+        //                 'rgba(255, 206, 86, 1)'
+        //             ],
+        //             borderWidth: 1
+        //         }
+        //     ]
+        // };
+        // 环形图数据
+        var $dashChartPiesData = {
+            labels: labels2,
+            datasets: [{
+                data: dataValues2,
+                backgroundColor: ['rgba(51, 202, 185, 0.5)', 'rgba(0, 0 ,225, 0.5)', 'rgba(255, 206, 86, 1)'],
+
+            }]
+        };
+
+        //饼图数据
+        var $dashChartTeacherRankPiesData = {
+            labels: labels3,
+            datasets: [
+                {
+                    label: labels3,
+                    data: dataValues3,
+                    backgroundColor: [
+                        'rgba(51, 202, 185, 0.5)',
+                        'rgba(0, 0 ,225, 0.5)',
+                        'rgba(255, 206, 86, 1)'
+                    ],
+                    // borderColor: [
+                    //     'rgba(255, 99, 132, 1)',
+                    //     'rgba(54, 162, 235, 1)',
+                    //     'rgba(255, 206, 86, 1)'
+                    // ],
+                    borderWidth: 1
+                }
+            ]
+        };
+
+        //柱状图
+        new Chart($dashChartBarsCnt, {
+            type: 'bar',
+            data: $dashChartBarsData,
+            options: $dashChartBarsData.options
+
+        });
+
+        //环形图
+        new Chart($dashChartPiesCnt, {
+            type: 'doughnut',
+            data: $dashChartPiesData,
+
+        });
+
+        //饼图
+        new Chart($dashChartPiesCnt1, {
+            type: 'pie',
+            data: $dashChartTeacherRankPiesData,
+
+        });
+        // new Chart($dashChartLinesCnt, {
+        //     type: 'line',
+        //     data: $dashChartLinesData,
+        // });
+    });
+</script>
+</body>
+</html>

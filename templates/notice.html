@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"/>
+    <title>通知消息</title>
+    <link rel="icon" href="static/favicon.ico" type="image/ico">
+    <link href="static/css/bootstrap.min.css" rel="stylesheet">
+    <link href="static/css/materialdesignicons.min.css" rel="stylesheet">
+    <link href="static/css/animate.min.css" rel="stylesheet">
+    <link href="static/css/style.min.css" rel="stylesheet">
+    <link href="static/js/jquery-treegrid/jquery.treegrid.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container-fluid p-t-15">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="row">
+                <div class="col-lg-6">
+                    <form>
+                        <header class="card-header">
+                            <div class="card-title">添加公告</div>
+                        </header>
+                        <div class="form-group">
+                            <label for="title" class="col-form-label">公告标题</label>
+                            <input type="text" class="form-control" id="title" name="title" maxlength="128"
+                                   placeholder="请输入公告标题">
+                        </div>
+                        <div id="error_message1" style="color: red"></div>
+                        <div class="form-group">
+                            <label for="content"
+                                   class="col-form-label">公告内容</label>
+                            <textarea class="form-control" id="content" name="content" rows="10" maxlength="1024"
+                                      placeholder="请在此输入公告内容，最长不超过1024字节"></textarea>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" id="btn-add" class="btn btn-primary">保存</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="col-lg-6">
+                    <div class="card">
+                        <header class="card-header">
+                            <div class="card-title">已发布公告列表</div>
+                        </header>
+                        <div class="card-body">
+                            <ul class="lyear-timeline lyear-timeline-left">
+                                {% for item in notice_infos %}
+                                <li class="lyear-timeline-item">
+                                    <div class="lyear-timeline-item-dot">
+                                        <span class="{% if item.id%2 == 0 %}badge badge-success{% else %}badge badge-info {{ item.id }}{% endif %}"></span>
+                                    </div>
+                                    <div class="lyear-timeline-item-content">
+                                        {% if item.title %}
+                                        <p class="mb-1"><strong>{{ item.title }}</strong></p>
+                                        {% endif %}
+                                        <p class="mb-0">{{ item.content }}</p>
+                                        <p>
+                                            <time class="mb-3">{{ item.release_time }}</time>
+                                        </p>
+                                    </div>
+                                </li>
+                                {% endfor %}
+                            </ul>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!--End 页面主要内容-->
+
+
+<script type="text/javascript" src="static/js/jquery.min.js"></script>
+<script type="text/javascript" src="static/js/popper.min.js"></script>
+<script type="text/javascript" src="static/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="static/js/perfect-scrollbar.min.js"></script>
+<script type="text/javascript" src="static/js/jquery.cookie.min.js"></script>
+<script type="text/javascript" src="static/js/bootstrap-notify.min.js"></script>
+<script type="text/javascript" src="static/js/bootstrap-multitabs/multitabs.min.js"></script>
+<script type="text/javascript" src="static/js/jquery.cookie.min.js"></script>
+<script type="text/javascript" src="static/js/index.min.js"></script>
+<script type="text/javascript" src="static/js/main.min.js"></script>
+<script type="text/javascript" src="static/js/Chart.min.js"></script>
+<script type="text/javascript" src="static/js/jquery.cookie.min.js"></script>
+<script type="text/javascript" src="static/js/bootstrap-maxlength/bootstrap-maxlength.min.js"></script>
+<script type="text/javascript" src="static/js/jquery-tagsinput/jquery.tagsinput.min.js"></script>
+<!--<script type="text/javascript" src="static/js/bootstrap-table/extensions/export/bootstrap-table-export.min.js"></script>-->
+<script type="text/javascript" src="static/js/jquery-confirm/jquery-confirm.min.js"></script>
+<script type="text/javascript" src="static/js/bootstrap-table/bootstrap-table.min.js"></script>
+<script type="text/javascript" src="static/js/bootstrap-table/locale/bootstrap-table-zh-CN.min.js"></script>
+<script type="text/javascript" src="static/js/jquery-treegrid/jquery.treegrid.min.js"></script>
+<script type="text/javascript"
+        src="static/js/bootstrap-table/extensions/treegrid/bootstrap-table-treegrid.min.js"></script>
+<script type="text/javascript" src="static/js/myutils.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        // 默认使用
+        $("input#title").maxlength({
+            warningClass: "badge badge-info",
+            limitReachedClass: "badge badge-warning"
+        });
+
+        // 文本域使用
+        $("textarea#content").maxlength({
+            threshold: 255,
+            warningClass: "badge badge-info",
+            limitReachedClass: "badge badge-warning"
+        });
+
+    });
+    $(function () {
+            // 添加公告
+            $('#btn-add').click(function () {
+                var title = $('#title').val();
+                var content = $('#content').val();
+                if (!validateStringLength(title, 1, 128)) {
+                    notice("公告标题长度不合法", 'danger');
+                    return;
+                }
+                ;
+
+                if (!validateStringLength(content, 1, 1024)) {
+                    notice("公告内容长度不合法", 'danger');
+                    return;
+                }
+                ;
+                sendPostRequest('/notice/add', {
+                    title: title,
+                    content: content,
+
+                }, function (data) {
+                    if (data.success) {
+                        notice(data.message, 'success');
+                        //清空输入框的内容
+                        $('#title').val('');
+                        $('#content').val('');
+                    } else {
+                        notice(data.message, 'danger');
+                    }
+                }, function (error) {
+                    console.error('Error:', error);
+                    notice(error.statusMessage, 'danger');
+                });
+
+            })
+        }
+    )
+</script>
+</body>
+</html>

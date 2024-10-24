@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
+    <title>用户注册</title>
+    <link rel="shortcut icon" type="image/x-icon" href="static/favicon.ico">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-touch-fullscreen" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <link rel="stylesheet" type="text/css" href="static/css/materialdesignicons.min.css">
+    <link rel="stylesheet" type="text/css" href="static/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="static/css/animate.min.css">
+    <link rel="stylesheet" type="text/css" href="static/css/style.min.css">
+    <style>
+        .login-form .has-feedback {
+            position: relative;
+        }
+
+        .login-form .has-feedback .form-control {
+            padding-left: 36px;
+        }
+
+        .login-form .has-feedback .mdi {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: auto;
+            width: 36px;
+            height: 36px;
+            line-height: 36px;
+            z-index: 4;
+            color: #dcdcdc;
+            display: block;
+            text-align: center;
+            pointer-events: none;
+        }
+
+        .login-form .has-feedback.row .mdi {
+            left: 15px;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+        }
+
+        .footer-links a {
+            color: #333;
+            text-decoration: none;
+        }
+    </style>
+</head>
+
+<body class="center-vh" style="background-image: url(static/images/background.jpg); background-size: cover;">
+<!--页面loading-->
+<div id="lyear-preloader" class="loading">
+    <div class="ctn-preloader">
+        <div class="round_spinner">
+            <div class="spinner"></div>
+            <img src="static/images/loading-logo.png" alt="">
+        </div>
+    </div>
+</div>
+<!--页面loading end-->
+
+<div class="card card-shadowed p-5 w-420 mb-0 mr-2 ml-2">
+    <div class="text-center mb-3">
+        <a href="#"><h2>用户注册</h2></a>
+    </div>
+
+    <form action="#!" method="post" class="login-form">
+        <div class="form-group has-feedback">
+            <span class="mdi mdi-account" aria-hidden="true"></span>
+            <input type="text" class="form-control" id="username" placeholder="请输入用户名，长度不超过32个字符">
+        </div>
+
+        <div class="form-group has-feedback">
+            <span class="mdi mdi-lock" aria-hidden="true"></span>
+            <input type="password" class="form-control" id="password" placeholder="请输入密码，长度不超过128个字符">
+        </div>
+
+        <div class="form-group has-feedback">
+            <span class="mdi mdi-email" aria-hidden="true"></span>
+            <input type="email" class="form-control" id="email" placeholder="请输入合法的邮箱地址">
+        </div>
+
+        <div class="form-group">
+            <button class="btn btn-block btn-primary" type="submit">注册</button>
+        </div>
+    </form>
+
+    <div class="footer-links">
+        <p class="text-muted mb-0"><a href="/login">返回登录</a></p>
+    </div>
+
+</div>
+
+<script type="text/javascript" src="static/js/jquery.min.js"></script>
+<script type="text/javascript" src="static/js/main.min.js"></script>
+<script type="text/javascript" src="static/js/bootstrap-notify.min.js"></script>
+<script type="text/javascript" src="static/js/myutils.js"></script>
+<script type="text/javascript">;</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // 获取表单元素
+        const loginForm = document.querySelector('.login-form');
+
+        // 添加事件监听器
+        loginForm.addEventListener('submit', function (event) {
+            event.preventDefault(); // 阻止默认的表单提交行为
+
+            // 获取表单数据
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const email = document.getElementById('email').value;
+            if (username.length == 0 || password.length == 0) {
+                notice('用户名或密码不能为空', 'warning');
+                return;
+            }
+            if (!validateUsername(username)) {
+                notice('用户名长度不合法', 'warning');
+                return;
+            }
+            if (!validatePassword(password)) {
+                notice('密码长度不合法', 'warning');
+                return;
+            }
+            if (!validateEmail(email)) {
+                notice('邮箱地址不合法', 'warning');
+                return;
+            }
+            loadingMessage();
+            sendPostRequest('/register', {username: username, password: password, email: email}, function (data) {
+                if (data.success) {
+                    // 登录成功，跳转到主页或其他页面
+                    window.location.href = '/login';
+                    notice(data.message, 'success');
+                } else {
+                    // 显示错误消息
+                    notice(data.message, 'danger');
+                }
+            }, function (error) {
+                notice(error.statusMessage, 'danger');
+            })
+
+        });
+    });
+
+</script>
+</body>
+</html>

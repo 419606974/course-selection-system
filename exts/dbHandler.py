@@ -16,6 +16,7 @@ import pymysql
 from loguru import logger
 from settings import Config
 
+
 class DbHandle:
     def __init__(self):
         self.host = Config.HOST
@@ -28,7 +29,8 @@ class DbHandle:
 
     def connect(self):
         try:
-            self.conn = pymysql.connect(host=self.host, port=self.port, user=self.user, passwd=self.passwd, database=self.database, connect_timeout=30)
+            self.conn = pymysql.connect(host=self.host, port=self.port, user=self.user, passwd=self.passwd,
+                                        database=self.database, connect_timeout=30)
             self.cursor = self.conn.cursor(pymysql.cursors.DictCursor)
             return self.conn
         except Exception as e:

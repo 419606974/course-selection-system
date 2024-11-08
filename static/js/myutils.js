@@ -95,7 +95,7 @@ function validateStringLength(string, minlength, maxlength) {
 }
 
 function validateUsername(username) {
-    return !(username.length < 4 || username.length > 32);
+    return !(username.length < 1 || username.length > 32);
 }
 
 
@@ -124,7 +124,7 @@ function isNumeric(str) {
  */
 function validatePassword(password) {
     // 检查密码长度是否在8到128个字符之间（包含边界值）
-    return !(password.length < 8 || password.length > 128);
+    return !(password.length < 1 || password.length > 128);
 }
 
 

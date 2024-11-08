@@ -28,55 +28,70 @@
             <div class="lyear-layout-sidebar-info lyear-scroll">
                 <nav class="sidebar-main">
                     <ul class="nav-drawer">
-                        <li permission-id="1" class="nav-item active">
-                            <a class="multitabs" href="lyear_main.html">
-                                <i class="mdi mdi-desktop-mac-dashboard"></i>
-                                <span>数据大屏</span>
-                            </a>
-                        </li>
+<!--                        <li permission-id="1" class="nav-item active">-->
+<!--                            <a class="multitabs" href="lyear_main.html">-->
+<!--                                <i class="mdi mdi-desktop-mac-dashboard"></i>-->
+<!--                                <span>数据大屏</span>-->
+<!--                            </a>-->
+<!--                        </li>-->
                         <li permission-id="2" class="nav-item nav-item">
                             <a href="/welcome" class="multitabs">
                                 <i class="mdi mdi-home"></i>
                                 <span>首页</span>
                             </a>
                         </li>
-                        <li permission-id="3" class="nav-item nav-item">
+                        <li permission-id="4" class="nav-item nav-item">
                             <a href="/teacher" class="multitabs">
                                 <i class="mdi mdi-teach"></i>
                                 <span>教师管理</span>
                             </a>
                         </li>
+                        <li permission-id="4" class="nav-item nav-item">
+                            <a href="/user" class="multitabs">
+                                <i class="mdi mdi-nature-people"></i>
+                                <span>学生管理</span>
+                            </a>
+                        </li>
+                        <li permission-id="4" class="nav-item nav-item">
+                            <a href="/course" class="multitabs">
+                                <i class="mdi mdi-alarm"></i>
+                                <span>课程管理</span>
+                            </a>
+                        </li>
                         <li class="nav-item nav-item-has-subnav">
-                            <a href="javascript:void(0)"><i class="mdi mdi-silo"></i> <span>选课管理</span></a>
-                            <ul class="nav nav-subnav">
-                                <li permission-id="4"><a class="multitabs" href="/course">课程管理</a></li>
+                            <a href="javascript:void(0)"><i class="mdi mdi-silo"></i> <span>成绩管理</span></a>
+                            <ul class="nav nav-subnav show">
+<!--                                <li permission-id="4"><a class="multitabs" href="/course">课程管理</a></li>-->
                                 <li permission-id="4"><a class="multitabs" href="/achievement">成绩录入</a></li>
+                                <li permission-id="4"><a class="multitabs" href="/gradelevel">成绩分级</a></li>
+                                <li permission-id="4"><a class="multitabs" href="/average">平均成绩</a></li>
+                                <li permission-id="4"><a class="multitabs" href="/progress">年度进步</a></li>
                                 <li permission-id="5"><a class="multitabs" href="/course_select">选课</a></li>
                                 <li permission-id="5"><a class="multitabs" href="/my_course">我的课程</a></li>
                                 <li permission-id="5"><a class="multitabs" href="/score">成绩查询</a></li>
                             </ul>
                         </li>
-                        <li permission-id="6" class="nav-item nav-item">
-                            <a class="multitabs" href="/notice">
-                                <i class="mdi mdi-message-text"></i>
-                                <span>公告管理</span>
-                            </a>
-                        </li>
+<!--                        <li permission-id="6" class="nav-item nav-item">-->
+<!--                            <a class="multitabs" href="/notice">-->
+<!--                                <i class="mdi mdi-message-text"></i>-->
+<!--                                <span>公告管理</span>-->
+<!--                            </a>-->
+<!--                        </li>-->
                         <li permission-id="7" class="nav-item nav-item">
                             <a class="multitabs" href="/audit">
                                 <i class="mdi mdi-notification-clear-all"></i>
                                 <span>审计日志</span>
                             </a>
                         </li>
-                        <li permission-id="8" class="nav-item nav-item-has-subnav">
-                            <a href="javascript:void(0)"><i class="mdi mdi-tools"></i> <span>系统工具</span></a>
-                            <ul class="nav nav-subnav">
-                                <li permission-id="8"><a class="multitabs" href="/role">角色管理</a></li>
-                                <li permission-id="9"><a class="multitabs" href="/permissions">权限设置</a></li>
-                                <li permission-id="10"><a class="multitabs" href="/user">用户管理</a></li>
+<!--                        <li permission-id="8" class="nav-item nav-item-has-subnav">-->
+<!--                            <a href="javascript:void(0)"><i class="mdi mdi-tools"></i> <span>系统工具</span></a>-->
+<!--                            <ul class="nav nav-subnav">-->
+<!--                                <li permission-id="8"><a class="multitabs" href="/role">角色管理</a></li>-->
+<!--                                <li permission-id="9"><a class="multitabs" href="/permissions">权限设置</a></li>-->
+<!--                                <li permission-id="10"><a class="multitabs" href="/user">用户管理</a></li>-->
 
-                            </ul>
-                        </li>
+<!--                            </ul>-->
+<!--                        </li>-->
                     </ul>
                 </nav>
 
@@ -100,28 +115,28 @@
                 </div>
 
                 <ul class="navbar-right d-flex align-items-center">
-                    <li class="dropdown dropdown-notice">
-								<span data-toggle="dropdown" class="icon-item">
-									<i class="mdi mdi-bell-outline"></i>
-									<span class="badge badge-danger">{{notice_infos.total}}</span>
-								</span>
-                        <div class="dropdown-menu dropdown-menu-right">
-                            <div class="lyear-notifications">
+<!--                    <li class="dropdown dropdown-notice">-->
+<!--								<span data-toggle="dropdown" class="icon-item">-->
+<!--									<i class="mdi mdi-bell-outline"></i>-->
+<!--									<span class="badge badge-danger">{{notice_infos.total}}</span>-->
+<!--								</span>-->
+<!--                        <div class="dropdown-menu dropdown-menu-right">-->
+<!--                            <div class="lyear-notifications">-->
 
-                                <div class="lyear-notifications-title clearfix" data-stopPropagation="true"><a
-                                        href="/notice" class="float-right js-create-tab" id="view-all-notices" data-title="公告管理">查看全部</a>你有
-                                    {{notice_infos.total}} 条未读消息
-                                </div>
-                                <div class="lyear-notifications-info lyear-scroll">
-                                    {% for item in notice_infos.infos %}
-                                    <a href="#!" class="dropdown-item"
-                                       title="{{ item.content }}">{{ item.title }}</a>
-                                    {% endfor %}
-                                </div>
+<!--                                <div class="lyear-notifications-title clearfix" data-stopPropagation="true"><a-->
+<!--                                        href="/notice" class="float-right js-create-tab" id="view-all-notices" data-title="公告管理">查看全部</a>你有-->
+<!--                                    {{notice_infos.total}} 条未读消息-->
+<!--                                </div>-->
+<!--                                <div class="lyear-notifications-info lyear-scroll">-->
+<!--                                    {% for item in notice_infos.infos %}-->
+<!--                                    <a href="#!" class="dropdown-item"-->
+<!--                                       title="{{ item.content }}">{{ item.title }}</a>-->
+<!--                                    {% endfor %}-->
+<!--                                </div>-->
 
-                            </div>
-                        </div>
-                    </li>
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                    </li>-->
                     <!--切换主题配色-->
                     <li class="dropdown dropdown-skin">
                         <span data-toggle="dropdown" class="icon-item"><i class="mdi mdi-palette"></i></span>
@@ -248,10 +263,10 @@
                             <span id="welcomeInfo"></span>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-right">
-                            <li>
-                                <a class="multitabs dropdown-item" class="js-create-tab" data-title="个人信息"
-                                   href="/user_center" id="user-center"><i class="mdi mdi-account"></i> 个人信息</a>
-                            </li>
+<!--                            <li>-->
+<!--                                <a class="multitabs dropdown-item" class="js-create-tab" data-title="个人信息"-->
+<!--                                   href="/user_center" id="user-center"><i class="mdi mdi-account"></i> 个人信息</a>-->
+<!--                            </li>-->
                             <li>
                                 <a class="multitabs dropdown-item"
                                    href="/password" id="change-password"><i class="mdi mdi-lock-outline"></i> 修改密码</a>
@@ -337,6 +352,14 @@
             notice(error.statusMessage, 'danger');
         });
     }
+    $(document).ready(function() {
+        // 触发点击事件展开“成绩管理”菜单
+        $('.nav-item-has-subnav > a').each(function() {
+            if ($(this).text().includes("成绩管理")) {
+                $(this).trigger('click');
+            }
+        });
+    });
 </script>
 </body>
 </html>

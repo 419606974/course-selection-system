@@ -15,7 +15,13 @@
     <link rel="stylesheet" type="text/css" href="static/js/jquery-confirm/jquery-confirm.min.css">
     <link rel="stylesheet" type="text/css" href="static/css/animate.min.css">
     <link rel="stylesheet" type="text/css" href="static/css/style.min.css">
-
+    <style>
+        /* 为每个按钮添加左右间距 */
+        .btn-spacing {
+            margin-left: 9px;
+            margin-right: 9px;
+        }
+    </style>
 </head>
 <style>
     /* 默认的搜索框 */
@@ -27,7 +33,7 @@
     }
 
     .lyear-search input {
-        width: 300px;
+        width: 400px;
         padding-left: 35px;
         -webkit-transition: .5s;
         transition: .5s;
@@ -49,29 +55,56 @@
                 <div class="card-body">
                     <div id="toolbar" class="toolbar-btn-action">
                         <div class="row">
-                            <div class="col-md-6">
+<!--                        <div class="col-md-6">-->
+                            <div class="col-md-12 d-flex justify-content-start mb-3">
                                 <!-- 新增和批量删除按钮 -->
-                                <button id="btn_add" type="button" class="btn btn-info" data-toggle="modal"
-                                        data-target="#exampleModalChange">
+                                <button id="btn_add" type="button" class="btn btn-info btn-spacing" data-toggle="modal"
+                                        data-target="#exampleModalChange" style="display: none;">
                                     <span class="mdi mdi-plus" aria-hidden="true"></span>新增
                                 </button>
-                                <button id="btn_delete" type="button" class="btn btn-danger">
+                                <button id="btn_delete" type="button" class="btn btn-danger btn-spacing" style="display: none;">
                                     <span class="mdi mdi-window-close" aria-hidden="true"></span>批量删除
                                 </button>
+                                <button id="btn_import" type="button" class="btn btn-success btn-spacing" data-toggle="modal"
+                                        data-target="#importModal" style="display: none;">
+                                    <span class="mdi mdi-file-excel" aria-hidden="true"></span>批量导入
+                                </button>
                             </div>
-                            <div class="col-md-6 text-right search-group">
-                                <!-- 搜索按钮和输入框 -->
-                                <div class="form-group">
-                                    <form class="lyear-search lyear-search-left lyear-search-rounder">
-                                        <div class="input-group">
-                                            <input type="text" name="searchInput" id="searchInput" class="form-control"
-                                                   placeholder="请输入搜索的关键词...">
-                                            <div class="input-group-btn">
-                                                <button id="btn_search" type="button" class="btn btn-default">搜索
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </form>
+<!--                            <div class="col-md-6 text-right search-group">-->
+<!--                                &lt;!&ndash; 搜索按钮和输入框 &ndash;&gt;-->
+<!--                                <div class="form-group">-->
+<!--                                    <form class="lyear-search lyear-search-left lyear-search-rounder">-->
+<!--                                        <div class="input-group">-->
+<!--                                            <input type="text" name="searchInput" id="searchInput" class="form-control"-->
+<!--                                                   placeholder="根据编号、用户名、姓名、邮箱或电话搜索">-->
+<!--                                            <div class="input-group-btn">-->
+<!--                                                <button id="btn_search" type="button" class="btn btn-default">搜索-->
+<!--                                                </button>-->
+<!--                                            </div>-->
+<!--                                        </div>-->
+<!--                                    </form>-->
+<!--                                </div>-->
+<!--                            </div>-->
+                        </div>
+                        <div class="modal fade" id="importModal" tabindex="-1" role="dialog" aria-labelledby="importModalLabel" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="importModalLabel">批量导入教师</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p>请选择Excel文件进行上传，文件表头如下：</p>
+                                        <p><strong>编号，姓名，性别，学历，类型，邮箱，电话，备注</strong></p>
+<!--                                        <p>注：批量导入的教师账号，密码和用户名一致</p>-->
+                                        <input type="file" id="fileInput" accept=".xlsx, .xls" class="form-control-file">
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                                        <button type="button" id="btn-upload" class="btn btn-primary">上传文件</button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -89,12 +122,17 @@
                                     <div class="modal-body">
                                         <form>
                                             <div class="form-group">
-                                                <label for="user-add-username" class="col-form-label">用户名</label>
-                                                <input type="text" class="form-control" id="user-add-username"
-                                                       maxlength="32"
-                                                       placeholder="请输入用户名">
+                                                <label for="user-add-number" class="col-form-label">教师编号</label>
+                                                <input type="text" class="form-control" id="user-add-number"
+                                                       maxlength="64"
+                                                       placeholder="请输入教师编号">
                                             </div>
-
+<!--                                            <div class="form-group">-->
+<!--                                                <label for="user-add-username" class="col-form-label">用户名</label>-->
+<!--                                                <input type="text" class="form-control" id="user-add-username"-->
+<!--                                                       maxlength="32"-->
+<!--                                                       placeholder="请输入用户名">-->
+<!--                                            </div>-->
                                             <div id="error_message1" style="color: red"></div>
                                             <div class="form-group">
                                                 <label for="user-add-name" class="col-form-label">教师姓名</label>
@@ -103,11 +141,24 @@
                                                        placeholder="请输入教师姓名">
                                             </div>
                                             <div class="form-group">
-                                                <label for="user-add-password" class="col-form-label">密码</label>
-                                                <input type="text" class="form-control" id="user-add-password"
-                                                       maxlength="128"
-                                                       placeholder="请输入8位及其以上的密码">
+                                                <label for="user-add-sex">性别</label>
+                                                <select class="form-control" id="user-add-sex">
+                                                    <option value="1">男</option>
+                                                    <option value="0">女</option>
+                                                </select>
                                             </div>
+                                            <div class="form-group">
+                                                <label for="user-add-education" class="col-form-label">教师学历</label>
+                                                <input type="text" class="form-control" id="user-add-education"
+                                                       maxlength="64"
+                                                       placeholder="请输入教师学历">
+                                            </div>
+<!--                                            <div class="form-group">-->
+<!--                                                <label for="user-add-password" class="col-form-label">密码</label>-->
+<!--                                                <input type="text" class="form-control" id="user-add-password"-->
+<!--                                                       maxlength="128"-->
+<!--                                                       placeholder="请输入密码">-->
+<!--                                            </div>-->
                                             <div id="error_message2" style="color: red"></div>
                                             <div class="form-group">
                                                 <label for="user-add-phone" class="col-form-label">手机号码</label>
@@ -124,19 +175,10 @@
                                             <div id="error_message3" style="color: red"></div>
 
                                             <div class="form-group">
-                                                <label for="user-add-rank">职级</label>
-                                                <select class="form-control" id="user-add-rank">
-                                                    <option value="1">讲师</option>
-                                                    <option value="2">副教授</option>
-                                                    <option value="3">教授</option>
-                                                </select>
-                                            </div>
-                                            <div class="form-group">
-                                                <label for="user-add-sex">性别</label>
-                                                <select class="form-control" id="user-add-sex">
-                                                    <option value="1">男</option>
-                                                    <option value="0">女</option>
-                                                </select>
+                                                <label for="user-add-rank">类型</label>
+                                                <input type="text" class="form-control" id="user-add-rank"
+                                                       maxlength="128"
+                                                       placeholder="请输入教师类型">
                                             </div>
                                             <div class="form-group">
                                                 <label for="user-add-description"
@@ -170,16 +212,31 @@
                                     <div class="modal-body">
                                         <form>
                                             <div class="form-group">
-                                                <label for="user-edit-username" class="col-form-label">用户名</label>
-                                                <input type="text" class="form-control" id="user-edit-username">
+                                                <label for="user-edit-number" class="col-form-label">编号</label>
+                                                <input type="text" class="form-control" id="user-edit-number">
                                             </div>
+<!--                                            <div class="form-group">-->
+<!--                                                <label for="user-edit-username" class="col-form-label">用户名</label>-->
+<!--                                                <input type="text" class="form-control" id="user-edit-username">-->
+<!--                                            </div>-->
                                             <div class="form-group">
                                                 <label for="user-edit-name" class="col-form-label">姓名</label>
                                                 <input type="text" class="form-control" id="user-edit-name">
                                             </div>
                                             <div class="form-group">
-                                                <label for="user-edit-password" class="col-form-label">密码</label>
-                                                <input type="text" class="form-control" id="user-edit-password">
+                                                <label for="user-edit-sex">性别</label>
+                                                <select class="form-control" id="user-edit-sex">
+                                                    <option value="1">男</option>
+                                                    <option value="0">女</option>
+                                                </select>
+                                            </div>
+<!--                                            <div class="form-group">-->
+<!--                                                <label for="user-edit-password" class="col-form-label">密码</label>-->
+<!--                                                <input type="text" class="form-control" id="user-edit-password">-->
+<!--                                            </div>-->
+                                            <div class="form-group">
+                                                <label for="user-edit-education" class="col-form-label">教师学历</label>
+                                                <input type="text" class="form-control" id="user-edit-education">
                                             </div>
                                             <div class="form-group">
                                                 <label for="user-edit-phone" class="col-form-label">手机号码</label>
@@ -189,22 +246,9 @@
                                                 <label for="user-edit-email" class="col-form-label">邮箱地址</label>
                                                 <input type="email" class="form-control" id="user-edit-email">
                                             </div>
-
-
                                             <div class="form-group">
-                                                <label for="user-edit-rank">教师职级</label>
-                                                <select class="form-control" id="user-edit-rank">
-                                                    <option value="1">讲师</option>
-                                                    <option value="2">副教授</option>
-                                                    <option value="3">教授</option>
-                                                </select>
-                                            </div>
-                                            <div class="form-group">
-                                                <label for="user-edit-sex">性别</label>
-                                                <select class="form-control" id="user-edit-sex">
-                                                    <option value="1">男</option>
-                                                    <option value="0">女</option>
-                                                </select>
+                                                <label for="user-edit-rank">教师类型</label>
+                                                <input type="text" class="form-control" id="user-edit-rank">
                                             </div>
                                             <div class="form-group">
                                                 <label for="user-edit-description"
@@ -254,6 +298,8 @@
 <script type="text/javascript" src="static/js/jquery-tagsinput/jquery.tagsinput.min.js"></script>
 <script type="text/javascript" src="static/js/jquery-confirm/jquery-confirm.min.js"></script>
 <script type="text/javascript" src="static/js/bootstrap-table/bootstrap-table.min.js"></script>
+<script type="text/javascript" src="static/js/bootstrap-table/extensions/export/bootstrap-table-export.min.js"></script>
+<script type="text/javascript" src="static/js/tableExport.min.js"></script>
 <script type="text/javascript" src="static/js/bootstrap-table/locale/bootstrap-table-zh-CN.min.js"></script>
 <script type="text/javascript" src="static/js/jquery-treegrid/jquery.treegrid.min.js"></script>
 <script type="text/javascript"
@@ -297,7 +343,9 @@
             pageNumber: 1,                       // 初始化加载第一页，默认第一页
             pageSize: 10,                        // 每页的记录行数
             pageList: [10, 20, 50, 100],         // 可供选择的每页的行数
-            search: false,                      // 是否显示表格搜索，此搜索是客户端搜索
+            search: true,                      // 是否显示表格搜索，此搜索是客户端搜索
+            showExport: true,        // 是否显示导出按钮, 导出功能需要导出插件支持(tableexport.min.js)
+            exportDataType: "all", // 导出数据类型, 'basic':当前页, 'all':所有数据, 'selected':选中的数据
             columns: [{
                 field: 'example',
                 checkbox: true    // 是否显示复选框
@@ -306,37 +354,22 @@
                 title: 'ID', //columns里的title的值就是表格列名
                 sortable: true,    // 是否排序
                 align: 'center',
+                visible: false,
             }, {
-                field: 'username',
-                title: '用户名',
+                field: 'number',
+                title: '编号',
                 align: 'center',
-            }, {
+            },
+            //     {
+            //     field: 'username',
+            //     title: '用户名',
+            //     align: 'center',
+            // },
+                {
                 field: 'name',
                 title: '姓名',
                 align: 'center',
-
-            }, {
-                field: 'rank',
-                title: '职级',
-                align: 'center',
-                formatter: function (value, row, index) {
-                    var value = "";
-                    if (row.rank == 1) {
-                        value = '<span class="badge badge-success">讲师</span>';
-                    } else if (row.rank == 2) {
-                        value = '<span class="badge badge-info">副教授</span>';
-                    } else if (row.rank == 3) {
-                        value = '<span class="badge badge-danger">教授</span>';
-                    } else {
-                        value = '未知';
-                    }
-                    return value;
-                }
-            }, {
-                field: 'email',
-                title: '邮箱地址',
-                align: 'center',
-            }, {
+            },{
                 field: 'sex',
                 title: '性别',
                 align: 'center',
@@ -351,6 +384,32 @@
                     }
                     return value;
                 }
+            }, {
+                field: 'education',
+                title: '学历',
+                align: 'center',
+
+            }, {
+                field: 'rank',
+                title: '类型',
+                align: 'center',
+                // formatter: function (value, row, index) {
+                //     var value = "";
+                //     if (row.rank == 1) {
+                //         value = '<span class="badge badge-success">讲师</span>';
+                //     } else if (row.rank == 2) {
+                //         value = '<span class="badge badge-info">副教授</span>';
+                //     } else if (row.rank == 3) {
+                //         value = '<span class="badge badge-danger">教授</span>';
+                //     } else {
+                //         value = '未知';
+                //     }
+                //     return value;
+                // }
+            }, {
+                field: 'email',
+                title: '邮箱地址',
+                align: 'center',
             }, {
                 field: 'phone',
                 title: '电话号码',
@@ -396,25 +455,27 @@
     $(function () {
         // 添加教师
         $('#btn-add').click(function () {
-            var username = $('#user-add-username').val();
+            var number = $('#user-add-number').val();
+            var username = $('#user-add-number').val();
             var name = $('#user-add-name').val();
-            var password = $('#user-add-password').val();
+            var password = $('#user-add-number').val();
             var email = $('#user-add-email').val();
             var phone = $('#user-add-phone').val();
             var sex = $('#user-add-sex').val();
             var rank = $('#user-add-rank').val();
+            var education = $('#user-add-education').val();
             var description = $('#user-add-description').val();
-            if (!validateStringLength(username, 1, 32)) {
-                document.getElementById("error_message1").textContent = "用户名长度不合法";
-                return;
-            }
-            ;
-
-            if (!validatePassword(password)) {
-                document.getElementById("error_message2").textContent = "密码长度不正确";
-                return;
-            }
-            ;
+            // if (!validateStringLength(username, 1, 32)) {
+            //     document.getElementById("error_message1").textContent = "用户名长度不合法";
+            //     return;
+            // }
+            // ;
+            //
+            // if (!validatePassword(password)) {
+            //     document.getElementById("error_message2").textContent = "密码长度不正确";
+            //     return;
+            // }
+            // ;
 
             if (!validateEmail(email)) {
                 document.getElementById("error_message3").textContent = "邮箱地址不合法";
@@ -427,26 +488,29 @@
                 return;
             }
             sendPostRequest('/teacher/add', {
+                number: number,
                 username: username,
                 name: name,
+                education: education,
                 password: password,
                 email: email,
                 phone: phone,
                 sex: parseInt(sex),
-                rank: parseInt(rank),
+                rank: rank,
                 description: description
             }, function (data) {
                 if (data.success) {
                     // 前端更新表格数据，添加该条目（仅仅是前端更新）
                     $('#tb_departments').bootstrapTable('append', {
-                        username: username,
+                        number: number,
+                        // username: username,
                         name: name,
+                        education: education,
                         email: email,
                         phone: phone,
                         sex: sex,
                         rank: rank,
                         description: description,
-
                     });
                     notice(data.message, 'success');
                 } else {
@@ -544,9 +608,12 @@
 
         // 填充模态框中的表单
         $('#exampleModalEdit #exampleModalEditTitle').text('编辑条目');
+        $('#exampleModalEdit #user-edit-number').val(row.number);
         $('#exampleModalEdit #user-edit-username').val(row.username);
         $('#exampleModalEdit #user-edit-username').prop('disabled', true);
         $('#exampleModalEdit #user-edit-name').val(row.name);
+        $('#exampleModalEdit #user-edit-education').val(row.education);
+        $('#exampleModalEdit #user-edit-password').val(row.password);
         $('#exampleModalEdit #user-edit-email').val(row.email);
         $('#exampleModalEdit #user-edit-phone').val(row.phone);
         $('#exampleModalEdit #user-edit-rank').val(row.rank);
@@ -565,40 +632,42 @@
     $('#btn-edit-save').click(function () {
         // 从按钮数据中获取当前行的 id
         var currentRowId = $(this).data('current-row-id');
-        var username = $('#exampleModalEdit #user-edit-username').val();
+        var number = $('#exampleModalEdit #user-edit-number').val();
+        var username = $('#exampleModalEdit #user-edit-number').val();
         var name = $('#exampleModalEdit #user-edit-name').val();
-        var password = $('#exampleModalEdit #user-edit-password').val();
+        var education = $('#exampleModalEdit #user-edit-education').val();
+        var password = $('#exampleModalEdit #user-edit-number').val();
         var email = $('#exampleModalEdit #user-edit-email').val();
         var phone = $('#exampleModalEdit #user-edit-phone').val();
         var sex = $('#exampleModalEdit #user-edit-sex').val();
         var rank = $('#exampleModalEdit #user-edit-rank').val();
         var description = $('#exampleModalEdit #user-edit-description').val();
-        console.log(password);
-        console.log(email);
-        console.log(name);
-        console.log(phone);
-        console.log(rank);
-        console.log(description);
+
         sendPostRequest('/teacher/update', {
+            number: number,
             username: username,
             name: name,
+            education: education,
             password: password,
             email: email,
             phone: phone,
             sex: parseInt(sex),
-            rank: parseInt(rank),
+            rank: rank,
             description: description
         }, function (data) {
             if (data.success) {
                 notice(data.message, 'success');
                 // 前端更新表格数据，添加该条目（仅仅是前端更新）
-                $('#tb_departments').bootstrapTable('updateRow', {
-                    index: currentRowId - 1, // 使用 id 获取行索引
+                $('#tb_departments').bootstrapTable('updateByUniqueId', {
+                    // index: currentRowId - 1, // 使用 id 获取行索引
+                    id: currentRowId,
                     row: {
                         id: currentRowId, // 使用获取到的 id
-                        username: username,
+                        number: number,
+                        // username: username,
                         name: name,
-                        password: password,
+                        education: education,
+                        // password: password,
                         email: email,
                         phone: phone,
                         sex: sex,
@@ -631,7 +700,7 @@
         $.confirm({
             title: '操作确认',
             escapeKey: true,
-            content: '确定要删除此条目吗?',
+            content: '确定要删除此条目吗？<br>注：如果课程表中有对应的老师，会删除失败',
             backgroundDismiss: true,
             buttons: {
                 okay: {
@@ -668,6 +737,56 @@
         });
 
     }
+    $(document).ready(function () {
+        $('#btn-upload').click(function () {
+            const file = $('#fileInput')[0].files[0];
+            if (!file) {
+                alert('请先选择一个文件');
+                return;
+            }
+            const formData = new FormData();
+            formData.append('file', file);
+
+            $.ajax({
+                url: '/teacher/import',
+                type: 'POST',
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function (response) {
+                    if (response.success) {
+                        alert('文件上传成功，教师已导入');
+                        $('#importModal').modal('hide');
+                        location.reload();  // 刷新页面
+                    } else {
+                        alert('导入失败：' + response.message);
+                    }
+                },
+                error: function () {
+                    alert('文件上传失败，请重试');
+                }
+            });
+        });
+    });
+
+    function accessControl() {
+        const role = localStorage.getItem('role');
+
+        if (role === '1') {
+            // 如果 role 等于 '1'，显示按钮
+            document.getElementById('btn_add').style.display = 'inline-block';
+            document.getElementById('btn_delete').style.display = 'inline-block';
+            document.getElementById('btn_import').style.display = 'inline-block';
+        } else {
+            // 隐藏“操作”列
+            $('#tb_departments').bootstrapTable('hideColumn', 'operate');
+        }
+    }
+
+    // 页面加载时调用 accessControl 函数
+    $(document).ready(function () {
+        accessControl();
+    });
 </script>
 </body>
 </html>

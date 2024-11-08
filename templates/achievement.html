@@ -15,7 +15,13 @@
     <link rel="stylesheet" type="text/css" href="static/js/jquery-confirm/jquery-confirm.min.css">
     <link rel="stylesheet" type="text/css" href="static/css/animate.min.css">
     <link rel="stylesheet" type="text/css" href="static/css/style.min.css">
-
+    <style>
+        /* 为每个按钮添加左右间距 */
+        .btn-spacing {
+            margin-left: 9px;
+            margin-right: 9px;
+        }
+    </style>
 </head>
 <style>
     /* 默认的搜索框 */
@@ -37,6 +43,30 @@
         margin-left: 10px;
     }
 
+    #toolbar2 {
+        margin-left: 20px;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    #toolbar2 .form-group {
+        display: flex;
+        align-items: center;
+        margin-bottom: 0;
+    }
+
+    #toolbar2 label {
+        margin-right: 6px;
+        font-size: 14px;
+    }
+
+    #toolbar2 .form-control {
+        width: 150px;
+        padding: 4px 8px;
+        font-size: 14px;
+        border-radius: 4px;
+    }
+
 </style>
 <body>
 
@@ -49,36 +79,91 @@
                 <div class="card-body">
                     <div id="toolbar" class="toolbar-btn-action">
                         <div class="row">
-                            <div class="col-md-6">
+<!--                        <div class="col-md-6">-->
+                            <div class="col-md-12 d-flex justify-content-start mb-3">
                                 <!-- 新增和批量删除按钮 -->
-                                <button id="btn_add" type="button" class="btn btn-info" data-toggle="modal"
-                                        data-target="#exampleModalChange">
+                                <button id="btn_add" type="button" class="btn btn-info btn-spacing" data-toggle="modal"
+                                        data-target="#exampleModalChange" style="display: none;">
                                     <span class="mdi mdi-plus" aria-hidden="true"></span>新增
                                 </button>
-                                <button id="btn_delete" type="button" class="btn btn-danger">
+                                <button id="btn_delete" type="button" class="btn btn-danger btn-spacing" style="display: none;">
                                     <span class="mdi mdi-window-close" aria-hidden="true"></span>批量删除
                                 </button>
+                                <button id="btn_import" type="button" class="btn btn-success btn-spacing" data-toggle="modal"
+                                        data-target="#importModal" style="display: none;">
+                                    <span class="mdi mdi-file-excel" aria-hidden="true"></span>批量导入
+                                </button>
                             </div>
-                            <div class="col-md-6 text-right search-group">
-                                <!-- 搜索按钮和输入框 -->
-                                <div class="form-group">
-                                    <form class="lyear-search lyear-search-left lyear-search-rounder">
-                                        <div class="input-group">
+<!--                            <div class="col-md-6 text-right search-group">-->
+<!--                                &lt;!&ndash; 搜索按钮和输入框 &ndash;&gt;-->
+<!--                                <div class="form-group">-->
+<!--                                    <form class="lyear-search lyear-search-left lyear-search-rounder">-->
+<!--                                        <div class="input-group">-->
 
-                                            <label for="course-name-query" style="margin-top: 5px">课程名字: </label>
-                                            <select class="form-control" id="course-name-query"
-                                                    style="width: 400px; margin-left: 20px;margin-right: 20px;">
-                                            </select>
-                                            <div class="input-group-btn">
-                                                <button id="btn_search" type="button" class="btn btn-success mr-2">
-                                                    <i class="mdi mdi-magnify"></i>搜索
+<!--                                            <label for="course-name-query" style="margin-top: 5px">课程名字: </label>-->
+<!--                                            <select class="form-control" id="course-name-query"-->
+<!--                                                    style="width: 400px; margin-left: 20px;margin-right: 20px;">-->
+<!--                                            </select>-->
+<!--                                            <div class="input-group-btn">-->
+<!--                                                <button id="btn_search" type="button" class="btn btn-success mr-2">-->
+<!--                                                    <i class="mdi mdi-magnify"></i>搜索-->
 
-                                                </button>
-                                                <a class="btn btn-default reset-btn"><i class="mdi mdi-restore"></i>重置</a>
-                                            </div>
+<!--                                                </button>-->
+<!--                                                <a class="btn btn-default reset-btn"><i class="mdi mdi-restore"></i>重置</a>-->
+<!--                                            </div>-->
 
-                                        </div>
-                                    </form>
+<!--                                        </div>-->
+<!--                                    </form>-->
+<!--                                </div>-->
+<!--                            </div>-->
+                            <div id="toolbar2" class="toolbar-btn-action d-flex align-items-center flex-wrap">
+                                <!-- 年度筛选框 -->
+                                <div class="form-group mr-3 d-flex align-items-center">
+                                    <label for="courseYearFilter" class="mr-2 font-weight-bold">筛选年度：</label>
+                                    <select id="courseYearFilter" class="form-control" style="width: 120px;">
+                                        <option value="">全部</option>
+                                    </select>
+                                </div>
+
+                                <!-- 学期筛选框 -->
+                                <div class="form-group mr-3 d-flex align-items-center">
+                                    <label for="courseSemesterFilter" class="mr-2 font-weight-bold">筛选学期：</label>
+                                    <select id="courseSemesterFilter" class="form-control" style="width: 120px;" disabled>
+                                        <option value="">全部</option>
+                                    </select>
+                                </div>
+
+                                <!-- 课程编号搜索框 -->
+                                <div class="form-group mr-3 d-flex align-items-center">
+                                    <label for="courseNoSearch" class="mr-2 font-weight-bold">课程编号：</label>
+                                    <input type="text" id="courseNoSearch" class="form-control" placeholder="输入课程编号" style="width: 150px;">
+                                </div>
+
+                                <!-- 学生学号搜索框 -->
+                                <div class="form-group d-flex align-items-center">
+                                    <label for="studentNoSearch" class="mr-2 font-weight-bold">学生学号：</label>
+                                    <input type="text" id="studentNoSearch" class="form-control" placeholder="输入学生学号" style="width: 150px;">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal fade" id="importModal" tabindex="-1" role="dialog" aria-labelledby="importModalLabel" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="importModalLabel">批量导入成绩</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p>请选择Excel文件进行上传，文件表头如下：</p>
+                                        <p><strong>课程编号，学生学号，成绩</strong></p>
+                                        <input type="file" id="fileInput" accept=".xlsx, .xls" class="form-control-file">
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                                        <button type="button" id="btn-upload" class="btn btn-primary">上传文件</button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -96,20 +181,30 @@
                                     <div class="modal-body">
                                         <form>
                                             <div class="form-group">
-                                                <label for="course-name">课程名字</label>
-                                                <select class="form-control" id="course-name">
-                                                </select>
+                                                <label for="course-no">课程编号</label>
+                                                <div class="input-group">
+                                                    <input type="text" class="form-control" id="course-no" placeholder="请输入课程编号">
+                                                    <div class="input-group-append">
+                                                        <button id="btn-validate-course" type="button" class="btn btn-primary">校验</button>
+                                                    </div>
+                                                </div>
                                             </div>
+                                            <div id="course-info" class="mt-2" style="display: none; color: #007bff;"></div>
                                             <div class="form-group">
-                                                <label for="course-student-name">学生姓名</label>
-                                                <select class="form-control" id="course-student-name">
-                                                </select>
+                                                <label for="student-no">学生学号</label>
+                                                <div class="input-group">
+                                                    <input type="text" class="form-control" id="student-no"
+                                                           placeholder="请输入学生学号">
+                                                    <div class="input-group-append">
+                                                        <button id="btn-validate-student" type="button" class="btn btn-primary">校验</button>
+                                                    </div>
+                                                </div>
                                             </div>
-
+                                            <div id="student-info" class="mt-2" style="display: none; color: #007bff;"></div>
                                             <div class="form-group">
                                                 <label for="achievement-add-score" class="col-form-label">成绩</label>
                                                 <input type="text" class="form-control" id="achievement-add-score"
-                                                       maxlength="3"
+                                                       maxlength="5"
                                                        placeholder="请输入成绩分数">
                                             </div>
 
@@ -141,15 +236,26 @@
                                     <div class="modal-body">
                                         <form>
                                             <div class="form-group">
-                                                <label for="achievement-edit-name" class="col-form-label">课程名</label>
-                                                <input type="text" class="form-control" id="achievement-edit-name">
+                                                <label for="achievement-edit-courseno" class="col-form-label">课程编号</label>
+                                                <div class="input-group">
+                                                    <input type="text" class="form-control" id="achievement-edit-courseno">
+                                                    <div class="input-group-append">
+<!--                                                        <button id="btn-validate-edit-course" type="button" class="btn btn-primary">校验</button>-->
+                                                    </div>
+                                                </div>
                                             </div>
+                                            <div id="edit-course-info" class="mt-2" style="display: none; color: #007bff;"></div>
                                             <div class="form-group">
-                                                <label for="achievement-edit-studentName"
-                                                       class="col-form-label">学生姓名</label>
-                                                <input type="text" class="form-control"
-                                                       id="achievement-edit-studentName">
+                                                <label for="achievement-edit-studentno"
+                                                       class="col-form-label">学生学号</label>
+                                                <div class="input-group">
+                                                    <input type="text" class="form-control" id="achievement-edit-studentno">
+                                                    <div class="input-group-append">
+<!--                                                        <button id="btn-validate-edit-student" type="button" class="btn btn-primary">校验</button>-->
+                                                    </div>
+                                                </div>
                                             </div>
+                                            <div id="edit-student-info" class="mt-2" style="display: none; color: #007bff;"></div>
                                             <div class="form-group">
                                                 <label for="achievement-edit-score" class="col-form-label">成绩</label>
                                                 <input type="text" class="form-control" id="achievement-edit-score">
@@ -165,7 +271,6 @@
                                 </div>
                             </div>
                         </div>
-
 
                     </div>
                     <table id="tb_departments">
@@ -196,6 +301,8 @@
 <script type="text/javascript" src="static/js/jquery-confirm/jquery-confirm.min.js"></script>
 <script type="text/javascript" src="static/js/jquery-confirm/jquery-confirm.min.js"></script>
 <script type="text/javascript" src="static/js/bootstrap-table/bootstrap-table.min.js"></script>
+<script type="text/javascript" src="static/js/bootstrap-table/extensions/export/bootstrap-table-export.min.js"></script>
+<script type="text/javascript" src="static/js/tableExport.min.js"></script>
 <script type="text/javascript" src="static/js/bootstrap-table/locale/bootstrap-table-zh-CN.min.js"></script>
 <script type="text/javascript" src="static/js/jquery-treegrid/jquery.treegrid.min.js"></script>
 <script type="text/javascript"
@@ -205,19 +312,20 @@
     $(document).ready(function () {
         accessControl();
         // 获取课程名填充添加成绩模态框下拉菜单
-        sendPostRequest('/course', '', function (data) {
-            var select = $('#course-name-query');
-            $.each(data, function (i, item) {
-                select.append($('<option>', {
-                    value: item.id,
-                    text: item.name
-                }));
-            });
-        }, function () {
-            console.log('Error loading course');
-        });
+        // sendPostRequest('/course', '', function (data) {
+        //     var select = $('#course-name-query');
+        //     $.each(data, function (i, item) {
+        //         select.append($('<option>', {
+        //             value: item.id,
+        //             text: item.name
+        //         }));
+        //     });
+        // }, function () {
+        //     console.log('Error loading course');
+        // });
         // 在页面加载完成后，从模板上下文中获取 teacher_infos 变量
         var achievementInfos = {{achievement_infos | tojson}};
+        console.log(localStorage);
         // 向后端获取数据填充table
         $('#tb_departments').bootstrapTable({
             data: achievementInfos,
@@ -250,6 +358,8 @@
             pageSize: 10,                        // 每页的记录行数
             pageList: [10, 20, 50, 100],         // 可供选择的每页的行数
             search: false,                      // 是否显示表格搜索，此搜索是客户端搜索
+            showExport: true,        // 是否显示导出按钮, 导出功能需要导出插件支持(tableexport.min.js)
+            exportDataType: "all", // 导出数据类型, 'basic':当前页, 'all':所有数据, 'selected':选中的数据
             columns: [{
                 field: 'example',
                 checkbox: true    // 是否显示复选框
@@ -258,19 +368,41 @@
                 title: 'ID', //columns里的title的值就是表格列名
                 sortable: true,    // 是否排序
                 align: 'center',
+                visible: false,
             }, {
+                field: 'course_year',
+                title: '年度',
+                align: 'center',
+            },{
+                field: 'course_semester',
+                title: '学期',
+                align: 'center',
+            },{
+                field: 'course_no',
+                title: '课程编号',
+                align: 'center',
+            },{
                 field: 'course_name',
-                title: '课程名',
+                title: '课程名称',
                 align: 'center',
             }, {
+                field: 'student_no',
+                title: '学生学号',
+                align: 'center',
+            },{
                 field: 'student_name',
                 title: '学生姓名',
                 align: 'center',
-
             }, {
                 field: 'score',
                 title: '成绩',
                 align: 'center',
+                sortable: true,
+            }, {
+                field: 'gradelevel_name',
+                title: '成绩分级',
+                align: 'center',
+                searchable: true,
             }, {
                 field: 'operate',
                 title: '操作',
@@ -285,7 +417,6 @@
                     }
                 }
             }],
-
             onLoadSuccess: function (data) {
                 $("[data-toggle='tooltip']").tooltip();
 
@@ -294,65 +425,230 @@
         })
         $('#tb_departments').bootstrapTable('hideLoading'); // 手动关闭加载提示
 
-    });
+        var filters = {}; // 存储所有筛选条件
 
-    // 获取课程名填充添加成绩模态框下拉菜单
-    sendPostRequest('/course', '', function (data) {
-        var select = $('#course-name');
-        $.each(data, function (i, item) {
-            select.append($('<option>', {
-                value: item.id,
-                text: item.name
-            }));
+        var achievementInfos = {{ achievement_infos | tojson }};
+        var years = [...new Set(achievementInfos.map(item => item.course_year))];
+        years.sort((a, b) => b - a);
+        years.forEach(year => {
+            $('#courseYearFilter').append(new Option(year, year));
         });
-    }, function () {
-        console.log('Error loading course');
+
+        // 年度筛选
+        $('#courseYearFilter').on('change', function() {
+            filters.course_year = $(this).val() || undefined;
+
+            // 清除学期筛选条件并重置学期下拉框
+            filters.course_semester = undefined;
+            $('#courseSemesterFilter').empty().append(new Option("全部", "")).prop('disabled', !$(this).val());
+
+            var selectedYear = $(this).val();
+            if (selectedYear) {
+                var semesters = [...new Set(achievementInfos.filter(item => item.course_year === selectedYear).map(item => item.course_semester))];
+                semesters.sort((a, b) => b - a);
+
+                semesters.forEach(semester => {
+                    $('#courseSemesterFilter').append(new Option(semester, semester));
+                });
+
+                $('#courseSemesterFilter').prop('disabled', false);
+            }
+
+            applyFilters();
+            calculateAverageScoreIfNeeded();
+        });
+
+        // 学期筛选
+        $('#courseSemesterFilter').on('change', function() {
+            filters.course_semester = $(this).val() || undefined;
+            applyFilters();
+            calculateAverageScoreIfNeeded();
+        });
+
+        // 课程编号搜索
+        $('#courseNoSearch').on('input', function() {
+            filters.course_no = $(this).val() || undefined;
+            applyFilters();
+            calculateAverageScoreIfNeeded();
+        });
+
+        // 学生学号搜索
+        $('#studentNoSearch').on('input', function() {
+            filters.student_no = $(this).val() || undefined;
+            applyFilters();
+            calculateAverageScoreIfNeeded();
+        });
+
+        // 应用筛选条件
+        function applyFilters() {
+            let activeFilters = Object.fromEntries(
+                Object.entries(filters).filter(([_, value]) => value !== undefined)
+            );
+
+            $('#tb_departments').bootstrapTable('filterBy', activeFilters);
+        }
+
+        // 判断是否需要显示平均分
+        function calculateAverageScoreIfNeeded() {
+            if ($('#courseNoSearch').val() || $('#studentNoSearch').val()) {
+                calculateAverageScore();
+            } else {
+                $('#average-score').remove();
+            }
+        }
+
+        // 计算平均分并显示在表格下方
+        function calculateAverageScore() {
+            var data = $('#tb_departments').bootstrapTable('getData');
+            if (data.length === 0) {
+                $('#average-score').remove();
+                return;
+            }
+
+            var totalScore = data.reduce((sum, row) => sum + (row.score || 0), 0);
+            var averageScore = (totalScore / data.length).toFixed(2);
+
+            $('#average-score').remove();
+            $('#tb_departments').after(`
+            <div id="average-score" class="mt-3" style="text-align: right; padding-right: 40px; font-size: 1.1em; font-weight: bold; color: #d9534f;">
+                平均分: ${averageScore}
+            </div>
+        `);
+        }
     });
 
-    $('#course-name').on('change', function () {
-        // 清空第二个下拉菜单的内容
-        $('#course-student-name').empty();
+    // // 获取课程名填充添加成绩模态框下拉菜单
+    // sendPostRequest('/course', '', function (data) {
+    //     var select = $('#course-name');
+    //     $.each(data, function (i, item) {
+    //         select.append($('<option>', {
+    //             value: item.id,
+    //             text: item.name
+    //         }));
+    //     });
+    // }, function () {
+    //     console.log('Error loading course');
+    // });
+    //
+    // $('#course-name').on('change', function () {
+    //     // 清空第二个下拉菜单的内容
+    //     $('#course-student-name').empty();
+    //
+    //     // 获取选中的课程 ID
+    //     var courseId = $(this).val();
+    //     sendPostRequest('/courseByStudent', {course_id: courseId}, function (data) {
+    //         var select = $('#course-student-name');
+    //         $.each(data, function (i, item) {
+    //             select.append($('<option>', {
+    //                 value: item.student_id,
+    //                 text: item.student_name
+    //             }));
+    //         });
+    //     }, function () {
+    //         console.log('Error loading course');
+    //     })
+    // });
 
-        // 获取选中的课程 ID
-        var courseId = $(this).val();
-        sendPostRequest('/courseByStudent', {course_id: courseId}, function (data) {
-            var select = $('#course-student-name');
-            $.each(data, function (i, item) {
-                select.append($('<option>', {
-                    value: item.student_id,
-                    text: item.student_name
-                }));
+    $(function () {
+        $('#btn-validate-course').click(function () {
+            var courseNo = $('#course-no').val();
+            if (!courseNo) {
+                alert('请输入课程编号');
+                return;
+            }
+
+            // 使用 AJAX 向后端发送请求
+            $.ajax({
+                url: '/course?course_no=' + encodeURIComponent(courseNo),
+                type: 'GET',
+                success: function (data) {
+                    if (data.success) {
+                        // 显示返回的课程信息
+                        console.log(data);
+                        $('#course-info').html(
+                         `<p><strong>课程编号:</strong> ${data.course_info.number}</p>
+                         <p><strong>课程名称:</strong> ${data.course_info.name}</p>
+                         <p><strong>授课老师:</strong> ${data.course_info.teacher_name}</p>`
+                        ).show();
+                    } else {
+                        $('#course-info').html(
+                            `<p><strong> ${data.message}</strong></p>`
+                        ).show();
+                    }
+                },
+                error: function () {
+                    alert('请求失败，请稍后重试');
+                    $('#course-info').hide();
+                }
             });
-        }, function () {
-            console.log('Error loading course');
-        })
+        });
+    });
+
+    $(function () {
+        $('#btn-validate-student').click(function () {
+            var studentNo = $('#student-no').val();
+            if (!studentNo) {
+                alert('请输入学生学号');
+                return;
+            }
+
+            // 使用 AJAX 向后端发送请求
+            $.ajax({
+                url: '/user?student_no=' + encodeURIComponent(studentNo),
+                type: 'GET',
+                success: function (data) {
+                    if (data.success) {
+                        // 显示返回的课程信息
+                        console.log(data);
+                        $('#student-info').html(
+                            `<p><strong>学生学号:</strong> ${data.student_info.username}</p>
+                         <p><strong>学生姓名:</strong> ${data.student_info.name}</p>
+                         <p><strong>学生团契:</strong> ${data.student_info.fellowship}</p>`
+                        ).show();
+                    } else {
+                        $('#student-info').html(
+                            `<p><strong>${data.message}</strong></p>`
+                        ).show();
+                    }
+                },
+                error: function () {
+                    alert('请求失败，请稍后重试');
+                    $('#student-info').hide();
+                }
+            });
+        });
     });
 
     $(function () {
         // 添加成绩
         $('#btn-add').click(function () {
             // 获取两个下拉框的值
-            var courseId = $('#course-name').val();
-            var studentId = $('#course-student-name').val();
+            var courseNo = $('#course-no').val();
+            var studentNo = $('#student-no').val();
             var score = $('#achievement-add-score').val();
 
-            if (!isNumeric(score) || parseInt(score) < 0 || score > 100) {
+            if (!isNumeric(score) || parseInt(score) < 0 || parseInt(score) > 10000) {
                 document.getElementById("error_message1").textContent = "请输入合法的分数值";
                 return;
             }
             ;
 
             sendPostRequest('/achievement/add', {
-                courseId: courseId,
-                studentId: studentId,
+                courseNo: courseNo,
+                studentNo: studentNo,
                 score: parseInt(score),
             }, function (data) {
                 if (data.success) {
                     // 前端更新表格数据，添加该条目（仅仅是前端更新）
                     $('#tb_departments').bootstrapTable('append', {
-                        course_name: courseId,
-                        student_name: studentId,
+                        course_year: data.achievement_info.course.year,
+                        course_semester: data.achievement_info.course.semester,
+                        course_no: data.achievement_info.course.number,
+                        course_name: data.achievement_info.course.name,
+                        student_no: data.achievement_info.student.username,
+                        student_name: data.achievement_info.student.name,
                         score: score,
+                        gradelevel_name: data.achievement_info.gradelevel_name,
                     });
                     notice(data.message, 'success');
                 } else {
@@ -364,6 +660,12 @@
             });
             // 关闭模态框
             $('#exampleModalChange').modal('hide');
+        });
+        // 在模态框关闭时清除课程和学生信息
+        $('#exampleModalChange').on('hide.bs.modal', function () {
+            // 清空课程和学生信息内容
+            $('#course-info').html('').hide();
+            $('#student-info').html('').hide();
         });
         // 初始化表格
         $('#tb_departments').bootstrapTable({
@@ -453,10 +755,10 @@
     function editRole(row) {
         // 填充模态框中的表单
         $('#exampleModalEdit #exampleModalEditTitle').text('编辑条目');
-        $('#exampleModalEdit #achievement-edit-name').val(row.course_name);
-        $('#exampleModalEdit #achievement-edit-name').prop('disabled', true);
-        $('#exampleModalEdit #achievement-edit-studentName').val(row.student_name);
-        $('#exampleModalEdit #achievement-edit-studentName').prop('disabled', true);
+        $('#exampleModalEdit #achievement-edit-courseno').val(row.course_no);
+        $('#exampleModalEdit #achievement-edit-courseno').prop('disabled', true);
+        $('#exampleModalEdit #achievement-edit-studentno').val(row.student_no);
+        $('#exampleModalEdit #achievement-edit-studentno').prop('disabled', true);
         $('#exampleModalEdit #achievement-edit-score').val(row.score);
         // 存储当前行的 id
         var currentRowId = row.id;
@@ -465,30 +767,89 @@
 
         // 将 id 作为数据附加到保存按钮上
         $('#btn-edit-save').data('current-row-id', currentRowId);
+
+        // 自动校验课程编号
+        validateCourseNumber(row.course_no);
+        // 自动校验学生学号
+        validateStudentNumber(row.student_no);
+    }
+
+    // 校验课程编号的函数
+    function validateCourseNumber(courseNo) {
+        if (!courseNo) return;
+
+        $.ajax({
+            url: '/course?course_no=' + encodeURIComponent(courseNo),
+            type: 'GET',
+            success: function (data) {
+                if (data.success) {
+                    $('#edit-course-info').html(
+                        `<p><strong>课程编号:</strong> ${data.course_info.number}</p>
+                    <p><strong>课程名称:</strong> ${data.course_info.name}</p>`
+                    ).show();
+                } else {
+                    $('#edit-course-info').html(`<p><strong>${data.message}</strong></p>`).show();
+                }
+            },
+            error: function () {
+                alert('请求失败，请稍后重试');
+                $('#edit-course-info').hide();
+            }
+        });
+    }
+
+    // 校验学生学号的函数
+    function validateStudentNumber(studentNo) {
+        if (!studentNo) return;
+
+        $.ajax({
+            url: '/user?student_no=' + encodeURIComponent(studentNo),
+            type: 'GET',
+            success: function (data) {
+                if (data.success) {
+                    $('#edit-student-info').html(
+                        `<p><strong>学生学号:</strong> ${data.student_info.username}</p>
+                    <p><strong>学生姓名:</strong> ${data.student_info.name}</p>`
+                    ).show();
+                } else {
+                    $('#edit-student-info').html(`<p><strong>${data.message}</strong></p>`).show();
+                }
+            },
+            error: function () {
+                alert('请求失败，请稍后重试');
+                $('#edit-student-info').hide();
+            }
+        });
     }
 
     // 编辑成绩保存
     $('#btn-edit-save').click(function () {
         // 从按钮数据中获取当前行的 id
         var currentRowId = $(this).data('current-row-id');
-        var courseName = $('#exampleModalEdit #achievement-edit-name').val();
-        var studentName = $('#exampleModalEdit #achievement-edit-studentName').val();
+        console.log(currentRowId)
+        var courseNo = $('#exampleModalEdit #achievement-edit-courseno').val();
+        var studentNo = $('#exampleModalEdit #achievement-edit-studentno').val();
         var newScore = $('#exampleModalEdit #achievement-edit-score').val();
         sendPostRequest('/achievement/update', {
             id: currentRowId,
-            courseName: courseName,
-            studentName: studentName,
+            courseNo: courseNo,
+            studentNo: studentNo,
             newScore: parseInt(newScore),
         }, function (data) {
             if (data.success) {
                 notice(data.message, 'success');
                 // 前端更新表格数据，添加该条目（仅仅是前端更新）
-                $('#tb_departments').bootstrapTable('updateRow', {
-                    index: currentRowId - 1, // 使用 id 获取行索引
+                $('#tb_departments').bootstrapTable('updateByUniqueId', {
+                    id: currentRowId, // 使用 id 获取行索引
                     row: {
                         id: currentRowId, // 使用获取到的 id
-                        score: newScore
-
+                        course_year: data.achievement_info.course.year,
+                        course_semester: data.achievement_info.course.semester,
+                        course_no: data.achievement_info.course.number,
+                        student_no: data.achievement_info.student.username,
+                        course_name: data.achievement_info.course.name,
+                        student_name: data.achievement_info.student.name,
+                        score: data.achievement_info.score
                     }
                 });
             } else {
@@ -552,6 +913,58 @@
             },
         });
     }
+    $(document).ready(function () {
+        $('#btn-upload').click(function () {
+            const file = $('#fileInput')[0].files[0];
+            if (!file) {
+                alert('请先选择一个文件');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('file', file);
+
+            $.ajax({
+                url: '/achievement/import',
+                type: 'POST',
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function (response) {
+                    if (response.success) {
+                        alert('文件上传成功，成绩已导入');
+                        $('#importModal').modal('hide');
+                        location.reload();  // 刷新页面
+                    } else {
+                        alert('导入失败：' + response.message);
+                    }
+                },
+                error: function () {
+                    alert('文件上传失败，请重试');
+                }
+            });
+        });
+    });
+
+    function accessControl() {
+        const role = localStorage.getItem('role');
+
+        if (role === '1') {
+            // 如果 role 等于 '1'，显示按钮
+            document.getElementById('btn_add').style.display = 'inline-block';
+            document.getElementById('btn_delete').style.display = 'inline-block';
+            document.getElementById('btn_import').style.display = 'inline-block';
+        } else {
+            // 隐藏“操作”列
+            $('#tb_departments').bootstrapTable('hideColumn', 'operate');
+        }
+    }
+
+    // 页面加载时调用 accessControl 函数
+    $(document).ready(function () {
+        accessControl();
+    });
+
 </script>
 </body>
 </html>

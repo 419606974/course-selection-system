@@ -45,7 +45,9 @@ def send_mail(sender, reciver, title, msg_content):
         server.quit()
         return True
 
+
 def insert_audit_log(ip, user, module, event):
-    result = db.execute_sql("INSERT INTO audit(op_ip,op_user,op_module,op_event) VALUES (%s,%s,%s,%s)",(ip, user, module, event))
+    result = db.execute_sql("INSERT INTO audit(op_ip,op_user,op_module,op_event) VALUES (%s,%s,%s,%s)",
+                            (ip, user, module, event))
     if result is None:
         logger.error("commit audit info fail")

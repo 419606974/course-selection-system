@@ -15,7 +15,13 @@
     <link rel="stylesheet" type="text/css" href="static/js/jquery-confirm/jquery-confirm.min.css">
     <link rel="stylesheet" type="text/css" href="static/css/animate.min.css">
     <link rel="stylesheet" type="text/css" href="static/css/style.min.css">
-
+    <style>
+        /* 为每个按钮添加左右间距 */
+        .btn-spacing {
+            margin-left: 9px;
+            margin-right: 9px;
+        }
+    </style>
 </head>
 <style>
     /* 默认的搜索框 */
@@ -31,6 +37,23 @@
         padding-left: 35px;
         -webkit-transition: .5s;
         transition: .5s;
+    }
+
+    .toolbar-container {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+    }
+
+    .button-group {
+        display: flex;
+        gap: 10px; /* 控制按钮之间的间距 */
+    }
+
+    .search-group {
+        display: flex;
+        gap: 20px; /* 控制搜索框之间的间距 */
     }
 
     #btn_delete {
@@ -49,29 +72,61 @@
                 <div class="card-body">
                     <div id="toolbar" class="toolbar-btn-action">
                         <div class="row">
-                            <div class="col-md-6">
+<!--                        <div class="col-md-6">-->
+                            <div class="col-md-12 d-flex justify-content-start mb-3">
                                 <!-- 新增和批量删除按钮 -->
-                                <button id="btn_add" type="button" class="btn btn-info" data-toggle="modal"
-                                        data-target="#exampleModalChange">
+                                <button id="btn_add" type="button" class="btn btn-info btn-spacing" data-toggle="modal"
+                                        data-target="#exampleModalChange" style="display: none;">
                                     <span class="mdi mdi-plus" aria-hidden="true"></span>新增
                                 </button>
-                                <button id="btn_delete" type="button" class="btn btn-danger">
+                                <button id="btn_delete" type="button" class="btn btn-danger btn-spacing" style="display: none;">
                                     <span class="mdi mdi-window-close" aria-hidden="true"></span>批量删除
                                 </button>
+                                <button id="btn_import" type="button" class="btn btn-success btn-spacing" data-toggle="modal"
+                                        data-target="#importModal" style="display: none;">
+                                    <span class="mdi mdi-file-excel" aria-hidden="true"></span>批量导入
+                                </button>
                             </div>
-                            <div class="col-md-6 text-right search-group">
-                                <!-- 搜索按钮和输入框 -->
-                                <div class="form-group">
-                                    <form class="lyear-search lyear-search-left lyear-search-rounder">
-                                        <div class="input-group">
-                                            <input type="text" name="searchInput" id="searchInput" class="form-control"
-                                                   placeholder="请输入搜索的关键词...">
-                                            <div class="input-group-btn">
-                                                <button id="btn_search" type="button" class="btn btn-default">搜索
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </form>
+<!--                            <div class="search-group">-->
+<!--                                &lt;!&ndash; 搜索按钮和输入框 &ndash;&gt;-->
+<!--                                <form class="lyear-search lyear-search-left lyear-search-rounder">-->
+<!--                                    <div class="input-group">-->
+<!--                                        <input type="text" name="searchInput" id="searchInput" class="form-control"-->
+<!--                                               placeholder="根据编号和课程名称搜索">-->
+<!--                                        <div class="input-group-btn">-->
+<!--                                            <button id="btn_search" type="button" class="btn btn-default">搜索</button>-->
+<!--                                        </div>-->
+<!--                                    </div>-->
+<!--                                </form>-->
+<!--                                <form class="lyear-search lyear-search-left lyear-search-rounder">-->
+<!--                                    <div class="input-group">-->
+<!--                                        <input type="text" name="searchteachernameInput" id="searchteachernameInput" class="form-control"-->
+<!--                                               placeholder="根据老师姓名搜索">-->
+<!--                                        <div class="input-group-btn">-->
+<!--                                            <button id="btn_teachername_search" type="button" class="btn btn-default">搜索</button>-->
+<!--                                        </div>-->
+<!--                                    </div>-->
+<!--                                </form>-->
+<!--                            </div>-->
+                        </div>
+                        <div class="modal fade" id="importModal" tabindex="-1" role="dialog" aria-labelledby="importModalLabel" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="importModalLabel">批量导入课程</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p>请选择Excel文件进行上传，文件表头如下：</p>
+                                        <p><strong>编号，课程名，学分，年度，学期，开课时间，结课时间，授课时间，授课地点，授课老师编号</strong></p>
+                                        <input type="file" id="fileInput" accept=".xlsx, .xls" class="form-control-file">
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                                        <button type="button" id="btn-upload" class="btn btn-primary">上传文件</button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -89,12 +144,47 @@
                                     <div class="modal-body">
                                         <form>
                                             <div class="form-group">
+                                                <label for="course-add-number" class="col-form-label">课程编号</label>
+                                                <input type="text" class="form-control" id="course-add-number"
+                                                       maxlength="32"
+                                                       placeholder="请输入课程编号">
+                                            </div>
+                                            <div class="form-group">
                                                 <label for="course-add-name" class="col-form-label">课程名字</label>
                                                 <input type="text" class="form-control" id="course-add-name"
                                                        maxlength="32"
                                                        placeholder="请输入课程名">
                                             </div>
-
+                                            <div class="form-group">
+                                                <label for="course-add-credits" class="col-form-label">学分</label>
+                                                <input type="text" class="form-control" id="course-add-credits"
+                                                       maxlength="32"
+                                                       placeholder="请输入课程学分">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="course-add-year" class="col-form-label">年度</label>
+                                                <input type="text" class="form-control" id="course-add-year"
+                                                       maxlength="32"
+                                                       placeholder="请输入课程年度">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="course-add-semester" class="col-form-label">学期</label>
+                                                <input type="text" class="form-control" id="course-add-semester"
+                                                       maxlength="32"
+                                                       placeholder="请输入课程学期">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="course-add-startdate" class="col-form-label">开课时间</label>
+                                                <input type="date" class="form-control" id="course-add-startdate"
+                                                       maxlength="32"
+                                                       placeholder="请输入课程开课时间">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="course-add-enddate" class="col-form-label">结课时间</label>
+                                                <input type="date" class="form-control" id="course-add-enddate"
+                                                       maxlength="32"
+                                                       placeholder="请输入课程结课时间">
+                                            </div>
                                             <div id="error_message1" style="color: red"></div>
                                             <div class="form-group">
                                                 <label for="course-add-time" class="col-form-label">授课时间</label>
@@ -109,12 +199,24 @@
                                                        placeholder="请输入授课地点">
                                             </div>
                                             <div class="form-group">
-                                                <label for="course-add-number" class="col-form-label">授课人数</label>
-                                                <input type="text" class="form-control" id="course-add-number"
-                                                       maxlength="3"
-                                                       placeholder="请输入授课人数">
+                                                <label for="course-add-teachernum" class="col-form-label">授课老师编号</label>
+                                                <div class="input-group">
+                                                    <input type="text" class="form-control" id="course-add-teachernum"
+                                                           maxlength="32"
+                                                           placeholder="请输入授课老师编号">
+                                                    <div class="input-group-append">
+                                                        <button id="btn-validate-teacher" type="button" class="btn btn-primary">校验</button>
+                                                    </div>
+                                                </div>
                                             </div>
-                                            <div id="error_message2" style="color: red"></div>
+                                            <div id="teacher-info" class="mt-2" style="display: none; color: #007bff;"></div>
+<!--                                            <div class="form-group">-->
+<!--                                                <label for="course-add-stunumber" class="col-form-label">授课人数</label>-->
+<!--                                                <input type="text" class="form-control" id="course-add-stunumber"-->
+<!--                                                       maxlength="3"-->
+<!--                                                       placeholder="请输入授课人数">-->
+<!--                                            </div>-->
+<!--                                            <div id="error_message2" style="color: red"></div>-->
 
 
                                         </form>
@@ -142,8 +244,32 @@
                                     <div class="modal-body">
                                         <form>
                                             <div class="form-group">
+                                                <label for="course-edit-number" class="col-form-label">课程编号</label>
+                                                <input type="text" class="form-control" id="course-edit-number">
+                                            </div>
+                                            <div class="form-group">
                                                 <label for="course-edit-name" class="col-form-label">课程名</label>
                                                 <input type="text" class="form-control" id="course-edit-name">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="course-edit-credits" class="col-form-label">学分</label>
+                                                <input type="text" class="form-control" id="course-edit-credits">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="course-edit-year" class="col-form-label">年度</label>
+                                                <input type="text" class="form-control" id="course-edit-year">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="course-edit-semester" class="col-form-label">学期</label>
+                                                <input type="text" class="form-control" id="course-edit-semester">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="course-edit-startdate" class="col-form-label">开课时间</label>
+                                                <input type="date" class="form-control" id="course-edit-startdate">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="course-edit-enddate" class="col-form-label">结课时间</label>
+                                                <input type="date" class="form-control" id="course-edit-enddate">
                                             </div>
                                             <div class="form-group">
                                                 <label for="course-edit-time" class="col-form-label">授课时间</label>
@@ -154,9 +280,19 @@
                                                 <input type="text" class="form-control" id="course-edit-place">
                                             </div>
                                             <div class="form-group">
-                                                <label for="course-edit-num" class="col-form-label">授课人数</label>
-                                                <input type="text" class="form-control" id="course-edit-num">
+                                                <label for="course-edit-teachernum" class="col-form-label">授课老师编号</label>
+                                                <div class="input-group">
+                                                    <input type="text" class="form-control" id="course-edit-teachernum">
+                                                    <div class="input-group-append">
+                                                        <button id="btn-validate-edit-teacher" type="button" class="btn btn-primary">校验</button>
+                                                    </div>
+                                                </div>
                                             </div>
+                                            <div id="edit-teacher-info" class="mt-2" style="display: none; color: #007bff;"></div>
+<!--                                            <div class="form-group">-->
+<!--                                                <label for="course-edit-stunumber" class="col-form-label">授课人数</label>-->
+<!--                                                <input type="text" class="form-control" id="course-edit-stunumber">-->
+<!--                                            </div>-->
                                         </form>
                                     </div>
                                     <div class="modal-footer">
@@ -198,6 +334,8 @@
 <script type="text/javascript" src="static/js/jquery-tagsinput/jquery.tagsinput.min.js"></script>
 <script type="text/javascript" src="static/js/jquery-confirm/jquery-confirm.min.js"></script>
 <script type="text/javascript" src="static/js/bootstrap-table/bootstrap-table.min.js"></script>
+<script type="text/javascript" src="static/js/bootstrap-table/extensions/export/bootstrap-table-export.min.js"></script>
+<script type="text/javascript" src="static/js/tableExport.min.js"></script>
 <script type="text/javascript" src="static/js/bootstrap-table/locale/bootstrap-table-zh-CN.min.js"></script>
 <script type="text/javascript" src="static/js/jquery-treegrid/jquery.treegrid.min.js"></script>
 <script type="text/javascript"
@@ -239,7 +377,9 @@
             pageNumber: 1,                       // 初始化加载第一页，默认第一页
             pageSize: 10,                        // 每页的记录行数
             pageList: [10, 20, 50, 100],         // 可供选择的每页的行数
-            search: false,                      // 是否显示表格搜索，此搜索是客户端搜索
+            search: true,                      // 是否显示表格搜索，此搜索是客户端搜索
+            showExport: true,        // 是否显示导出按钮, 导出功能需要导出插件支持(tableexport.min.js)
+            exportDataType: "all", // 导出数据类型, 'basic':当前页, 'all':所有数据, 'selected':选中的数据
             columns: [{
                 field: 'example',
                 checkbox: true    // 是否显示复选框
@@ -248,11 +388,56 @@
                 title: 'ID', //columns里的title的值就是表格列名
                 sortable: true,    // 是否排序
                 align: 'center',
+                visible: false,
             }, {
+                field: 'number',
+                title: '编号',
+                align: 'center',
+            },{
                 field: 'name',
                 title: '课程名',
                 align: 'center',
+            },{
+                field: 'credits',
+                title: '学分',
+                align: 'center',
+            },{
+                field: 'year',
+                title: '年度',
+                align: 'center',
+            },{
+                field: 'semester',
+                title: '学期',
+                align: 'center',
             }, {
+                field: 'startdate',
+                title: '开课时间',
+                align: 'center',
+                formatter: function(value) {
+                    if (value) {
+                        let date = new Date(value);
+                        let year = date.getFullYear();
+                        let month = String(date.getMonth() + 1).padStart(2, '0'); // 月份从0开始计数
+                        let day = String(date.getDate()).padStart(2, '0');
+                        return `${year}-${month}-${day}`;
+                    }
+                    return '';
+                }
+            },{
+                field: 'enddate',
+                title: '结课时间',
+                align: 'center',
+                formatter: function(value) {
+                    if (value) {
+                        let date = new Date(value);
+                        let year = date.getFullYear();
+                        let month = String(date.getMonth() + 1).padStart(2, '0'); // 月份从0开始计数
+                        let day = String(date.getDate()).padStart(2, '0');
+                        return `${year}-${month}-${day}`;
+                    }
+                    return '';
+                }
+            },{
                 field: 'teaching_time',
                 title: '授课时间',
                 align: 'center',
@@ -265,15 +450,17 @@
                 field: 'teacher_name',
                 title: '授课老师',
                 align: 'center',
-            }, {
-                field: 'allow_stu_num',
-                title: '授课人数',
-                align: 'center',
-            }, {
-                field: 'selected_stu_num',
-                title: '已选人数',
-                align: 'center',
-            }, {
+            },
+            //     {
+            //     field: 'allow_stu_num',
+            //     title: '授课人数',
+            //     align: 'center',
+            // }, {
+            //     field: 'selected_stu_num',
+            //     title: '已选人数',
+            //     align: 'center',
+            // },
+                {
                 field: 'operate',
                 title: '操作',
                 align: 'center',
@@ -301,12 +488,97 @@
     });
 
     $(function () {
+        $('#btn-validate-teacher').click(function () {
+            var teacherNo = $('#course-add-teachernum').val();
+            if (!teacherNo) {
+                alert('请输入教师编号');
+                return;
+            }
+
+            // 使用 AJAX 向后端发送请求
+            $.ajax({
+                url: '/teacher?teacher_no=' + encodeURIComponent(teacherNo),
+                type: 'GET',
+                success: function (data) {
+                    if (data.success) {
+                        // 显示返回的课程信息
+                        console.log(data);
+                        $('#teacher-info').html(
+                            `<p><strong>教师编号:</strong> ${data.teacher_info.number}</p>
+                         <p><strong>教师姓名:</strong> ${data.teacher_info.name}</p>`
+                        ).show();
+                    } else {
+                        $('#teacher-info').html(
+                            `<p><strong>${data.message}</strong></p>`
+                        ).show();
+                    }
+                },
+                error: function () {
+                    alert('请求失败，请稍后重试');
+                    $('#teacher-info').hide();
+                }
+            });
+        });
+    });
+
+    $(function () {
+        $('#btn-validate-edit-teacher').click(function () {
+            var teacherNo = $('#course-edit-teachernum').val();
+            if (!teacherNo) {
+                alert('请输入教师编号');
+                return;
+            }
+
+            // 使用 AJAX 向后端发送请求
+            $.ajax({
+                url: '/teacher?teacher_no=' + encodeURIComponent(teacherNo),
+                type: 'GET',
+                success: function (data) {
+                    if (data.success) {
+                        // 显示返回的课程信息
+                        console.log(data);
+                        $('#edit-teacher-info').html(
+                            `<p><strong>教师编号:</strong> ${data.teacher_info.number}</p>
+                         <p><strong>教师姓名:</strong> ${data.teacher_info.name}</p>`
+                        ).show();
+                    } else {
+                        $('#edit-teacher-info').html(
+                            `<p><strong>${data.message}</strong></p>`
+                        ).show();
+                    }
+                },
+                error: function () {
+                    alert('请求失败，请稍后重试');
+                    $('#edit-teacher-info').hide();
+                }
+            });
+        });
+    });
+
+    // 在模态框关闭时清除课程和学生信息
+    $('#exampleModalChange').on('hide.bs.modal', function () {
+        // 清空课程和学生信息内容
+        $('#teacher-info').html('').hide();
+    });
+    $('#exampleModalEdit').on('hide.bs.modal', function () {
+        // 清空课程和学生信息内容
+        $('#edit-teacher-info').html('').hide();
+    });
+
+    $(function () {
         // 添加课程
         $('#btn-add').click(function () {
+            var number = $('#course-add-number').val();
             var name = $('#course-add-name').val();
+            var credits = $('#course-add-credits').val();
+            var year = $('#course-add-year').val();
+            var semester = $('#course-add-semester').val();
+            var startdate = $('#course-add-startdate').val();
+            var enddate = $('#course-add-enddate').val();
             var time = $('#course-add-time').val();
             var place = $('#course-add-place').val();
-            var number = $('#course-add-number').val();
+            var teachernum = $('#course-add-teachernum').val();
+            // var stunumber = $('#course-add-stunumber').val();
             if (!validateStringLength(name, 1, 32)) {
                 document.getElementById("error_message1").textContent = "课程名长度不合法";
                 return;
@@ -327,18 +599,31 @@
 
 
             sendPostRequest('/course/add', {
+                number: number,
                 name: name,
+                credits: credits,
+                year: year,
+                semester: semester,
+                startdate: startdate,
+                enddate:enddate,
                 teachingTime: time,
                 teachingPlace: place,
-                allowNumber: number,
+                teachernum: teachernum,
             }, function (data) {
                 if (data.success) {
                     // 前端更新表格数据，添加该条目（仅仅是前端更新）
+                    // location.reload();  // 刷新页面
                     $('#tb_departments').bootstrapTable('append', {
+                        number: number,
                         name: name,
+                        credits: credits,
+                        year: year,
+                        semester: semester,
+                        startdate: startdate,
+                        enddate:enddate,
                         teaching_time: time,
                         teaching_place: place,
-                        allow_stu_num: number,
+                        teacher_name: data.teacher_name,
                     });
                     notice(data.message, 'success');
                 } else {
@@ -377,6 +662,16 @@
             var keywords = $('#searchInput').val();
             // 发起 AJAX 请求
             $.getJSON('/course?query=' + encodeURIComponent(keywords), function (data) {
+                // 使用 bootstrapTable('load', data.rows) 更新表格
+                $('#tb_departments').bootstrapTable('load', data);
+            });
+        });
+        // 查询按钮添加点击事件
+        $('#btn_teachername_search').click(function () {
+            // 获取查询输入框的内容
+            var keywords = $('#searchteachernameInput').val();
+            // 发起 AJAX 请求
+            $.getJSON('/course?teacher_name=' + encodeURIComponent(keywords), function (data) {
                 // 使用 bootstrapTable('load', data.rows) 更新表格
                 $('#tb_departments').bootstrapTable('load', data);
             });
@@ -429,11 +724,25 @@
     function editRole(row) {
         // 填充模态框中的表单
         $('#exampleModalEdit #exampleModalEditTitle').text('编辑条目');
+        $('#exampleModalEdit #course-edit-number').val(row.number);
         $('#exampleModalEdit #course-edit-name').val(row.name);
-        $('#exampleModalEdit #course-edit-name').prop('disabled', true);
+        $('#exampleModalEdit #course-edit-credits').val(row.credits);
+        $('#exampleModalEdit #course-edit-year').val(row.year);
+        $('#exampleModalEdit #course-edit-semester').val(row.semester);
+        if (row.startdate) {
+            const date = new Date(row.startdate);
+            const formattedDate = date.toISOString().split('T')[0]; // 转换为 YYYY-MM-DD
+            $('#course-edit-startdate').val(formattedDate);
+        }
+        if (row.enddate) {
+            const date = new Date(row.enddate);
+            const formattedDate = date.toISOString().split('T')[0]; // 转换为 YYYY-MM-DD
+            $('#course-edit-enddate').val(formattedDate);
+        }
         $('#exampleModalEdit #course-edit-time').val(row.teaching_time);
         $('#exampleModalEdit #course-edit-place').val(row.teaching_place);
-        $('#exampleModalEdit #course-edit-num').val(row.allow_stu_num);
+        $('#exampleModalEdit #course-edit-teachernum').val(row.teacher_number);
+        // $('#exampleModalEdit #course-edit-stunumber').val(row.allow_stu_num);
         // 存储当前行的 id
         var currentRowId = row.id;
         // 显示模态框
@@ -447,27 +756,49 @@
     $('#btn-edit-save').click(function () {
         // 从按钮数据中获取当前行的 id
         var currentRowId = $(this).data('current-row-id');
+        var number = $('#exampleModalEdit #course-edit-number').val();
         var name = $('#exampleModalEdit #course-edit-name').val();
+        var credits = $('#exampleModalEdit #course-edit-credits').val();
+        var year = $('#exampleModalEdit #course-edit-year').val();
+        var semester = $('#exampleModalEdit #course-edit-semester').val();
+        var startdate = $('#exampleModalEdit #course-edit-startdate').val();
+        var enddate = $('#exampleModalEdit #course-edit-enddate').val();
         var updateTime = $('#exampleModalEdit #course-edit-time').val();
         var updatePlace = $('#exampleModalEdit #course-edit-place').val();
-        var updateNumber = $('#exampleModalEdit #course-edit-num').val();
+        var teachernum = $('#exampleModalEdit #course-edit-teachernum').val();
+        // var updateNumber = $('#exampleModalEdit #course-edit-stunumber').val();
         sendPostRequest('/course/update', {
+            number: number,
             name: name,
+            credits: credits,
+            year: year,
+            semester: semester,
+            startdate: startdate,
+            enddate:enddate,
             updateTime: updateTime,
             updatePlace: updatePlace,
-            updateNumber: updateNumber,
+            teachernum: teachernum,
+            // updateNumber: updateNumber,
         }, function (data) {
             if (data.success) {
                 notice(data.message, 'success');
                 // 前端更新表格数据，添加该条目（仅仅是前端更新）
-                $('#tb_departments').bootstrapTable('updateRow', {
-                    index: currentRowId - 1, // 使用 id 获取行索引
+                $('#tb_departments').bootstrapTable('updateByUniqueId', {
+                    // index: currentRowId - 1, // 使用 id 获取行索引
+                    id: currentRowId,  // 用 username 作为唯一标识
                     row: {
                         id: currentRowId, // 使用获取到的 id
+                        number: number,
                         name: name,
+                        credits: credits,
+                        year: year,
+                        semester: semester,
+                        startdate: startdate,
+                        enddate:enddate,
                         teaching_time: updateTime,
                         teaching_place: updatePlace,
-                        allow_stu_num: updateNumber
+                        teacher_name: data.teacher_name,
+                        // allow_stu_num: updateNumber
                     }
                 });
             } else {
@@ -495,7 +826,7 @@
         $.confirm({
             title: '操作确认',
             escapeKey: true,
-            content: '确定要删除此条目吗?',
+            content: '确定要删除此条目吗？<br>注：如果成绩表中有对应的课程，会删除失败',
             backgroundDismiss: true,
             buttons: {
                 okay: {
@@ -530,9 +861,59 @@
                 }
             },
         });
-
-
     }
+    $(document).ready(function () {
+        $('#btn-upload').click(function () {
+            const file = $('#fileInput')[0].files[0];
+            if (!file) {
+                alert('请先选择一个文件');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('file', file);
+
+            $.ajax({
+                url: '/course/import',
+                type: 'POST',
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function (response) {
+                    if (response.success) {
+                        alert('文件上传成功，课程已导入');
+                        $('#importModal').modal('hide');
+                        location.reload();  // 刷新页面
+                    } else {
+                        alert('导入失败：' + response.message);
+                    }
+                },
+                error: function () {
+                    alert('文件上传失败，请重试');
+                }
+            });
+        });
+    });
+
+    function accessControl() {
+        const role = localStorage.getItem('role');
+
+        if (role === '1') {
+            // 如果 role 等于 '1'，显示按钮
+            document.getElementById('btn_add').style.display = 'inline-block';
+            document.getElementById('btn_delete').style.display = 'inline-block';
+            document.getElementById('btn_import').style.display = 'inline-block';
+        } else {
+            // 隐藏“操作”列
+            $('#tb_departments').bootstrapTable('hideColumn', 'operate');
+        }
+    }
+
+    // 页面加载时调用 accessControl 函数
+    $(document).ready(function () {
+        accessControl();
+    });
+
 </script>
 </body>
 </html>

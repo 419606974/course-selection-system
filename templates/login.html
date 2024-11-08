@@ -125,8 +125,8 @@
             </button>
             <ul class="dropdown-menu">
                 <li><a class="dropdown-item" href="#!">管理员</a></li>
-                <li><a class="dropdown-item" href="#!">教师</a></li>
-                <li><a class="dropdown-item" href="#!">学生</a></li>
+                <li><a class="dropdown-item" href="#!">查询员</a></li>
+<!--                <li><a class="dropdown-item" href="#!">学生</a></li>-->
             </ul>
         </div>
         <div class="form-group rememberme-group">
@@ -170,12 +170,12 @@
                 case '管理员':
                     roleId = 1;
                     break;
-                case '教师':
+                case '查询员':
                     roleId = 2;
                     break;
-                case '学生':
-                    roleId = 3;
-                    break;
+                // case '学生':
+                //     roleId = 3;
+                //     break;
             }
             $('.dropdown-toggle').text(role);
         });

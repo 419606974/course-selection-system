@@ -12,7 +12,6 @@ import os
 from datetime import timedelta
 
 
-
 class Config(object):
     # 运行后端服务的的IP地址，开发环境建议用127.0.0.1
     SERVER_IP = '127.0.0.1'
@@ -24,11 +23,9 @@ class Config(object):
     SECRET_KEY = "*(%#4sxcz(^(#$#8423"
     # 可选，配置 session 的 cookie 名称
     SESSION_COOKIE_NAME = 'test'
-    PERMANENT_SESSION_LIFETIME=timedelta(days=7)
+    PERMANENT_SESSION_LIFETIME = timedelta(days=7)
     # 在session中的session头添加的东西
     # SESSION_KEY_PREFIX='stu-'
-
-
 
     '''  数据库配置相关  '''
     HOST = '127.0.0.1'

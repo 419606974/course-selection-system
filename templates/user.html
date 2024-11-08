@@ -15,6 +15,13 @@
     <link rel="stylesheet" type="text/css" href="static/css/animate.min.css">
     <link rel="stylesheet" type="text/css" href="static/js/jquery-confirm/jquery-confirm.min.css">
     <link rel="stylesheet" type="text/css" href="static/css/style.min.css">
+    <style>
+        /* 为每个按钮添加左右间距 */
+        .btn-spacing {
+            margin-left: 9px;
+            margin-right: 9px;
+        }
+    </style>
 </head>
 <style>
     /* 默认的搜索框 */
@@ -48,32 +55,59 @@
                 <div class="card-body">
                     <div id="toolbar" class="toolbar-btn-action">
                         <div class="row">
-                            <div class="col-md-6">
+<!--                        <div class="col-md-6">-->
+                            <div class="col-md-12 d-flex justify-content-start mb-3">
                                 <!-- 新增和批量删除按钮 -->
-                                <button id="btn_add" type="button" class="btn btn-info" data-toggle="modal"
-                                        data-target="#exampleModalChange">
+                                <button id="btn_add" type="button" class="btn btn-info btn-spacing" data-toggle="modal"
+                                        data-target="#exampleModalChange" style="display: none;">
                                     <span class="mdi mdi-plus" aria-hidden="true"></span>新增
                                 </button>
-                                <button id="btn_delete" type="button" class="btn btn-danger">
+                                <button id="btn_delete" type="button" class="btn btn-danger btn-spacing" style="display: none;">
                                     <span class="mdi mdi-window-close" aria-hidden="true"></span>批量删除
                                 </button>
+                                <button id="btn_import" type="button" class="btn btn-success btn-spacing" data-toggle="modal"
+                                        data-target="#importModal" style="display: none;">
+                                    <span class="mdi mdi-file-excel" aria-hidden="true"></span>批量导入
+                                </button>
                             </div>
-                            <div class="col-md-6 text-right search-group">
-                                <!-- 搜索按钮和输入框 -->
-                                <div class="form-group">
-                                    <form class="lyear-search lyear-search-left lyear-search-rounder">
-                                        <div class="input-group">
-                                            <input type="text" name="searchInput" id="searchInput" class="form-control"
-                                                   placeholder="请输入搜索的关键词...">
-                                            <div class="input-group-btn">
-                                                <button id="btn_search" type="button" class="btn btn-default">搜索
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </form>
+<!--                            <div class="col-md-6 text-right search-group">-->
+<!--                                &lt;!&ndash; 搜索按钮和输入框 &ndash;&gt;-->
+<!--                                <div class="form-group">-->
+<!--                                    <form class="lyear-search lyear-search-left lyear-search-rounder">-->
+<!--                                        <div class="input-group">-->
+<!--                                            <input type="text" name="searchInput" id="searchInput" class="form-control"-->
+<!--                                                   placeholder="根据学号、姓名、邮箱或电话搜索">-->
+<!--                                            <div class="input-group-btn">-->
+<!--                                                <button id="btn_search" type="button" class="btn btn-default">搜索-->
+<!--                                                </button>-->
+<!--                                            </div>-->
+<!--                                        </div>-->
+<!--                                    </form>-->
+<!--                                </div>-->
+<!--                            </div>-->
+                        </div>
+                        <div class="modal fade" id="importModal" tabindex="-1" role="dialog" aria-labelledby="importModalLabel" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="importModalLabel">批量导入学生</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p>请选择Excel文件进行上传，文件表头如下：</p>
+                                        <p><strong>学号，姓名，性别，籍贯，入学时间，学生类别，专业，团契，电话，邮箱，备注</strong></p>
+                                        <input type="file" id="fileInput" accept=".xlsx, .xls" class="form-control-file">
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                                        <button type="button" id="btn-upload" class="btn btn-primary">上传文件</button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
+
                         <!--这里是模拟一个弹出框添加条目-->
                         <div class="modal fade" id="exampleModalChange" tabindex="-1" role="dialog"
                              aria-labelledby="exampleModalChangeLabel" aria-hidden="true">
@@ -88,36 +122,77 @@
                                     <div class="modal-body">
                                         <form>
                                             <div class="form-group">
-                                                <label for="user-add-name" class="col-form-label">用户名</label>
+                                                <label for="user-add-name" class="col-form-label">学号</label>
                                                 <input type="text" class="form-control" id="user-add-name"
-                                                       placeholder="请输入6位以上的用户名">
+                                                       placeholder="请输入学号">
                                             </div>
                                             <div id="error_message1" style="color: red"></div>
                                             <div class="form-group">
-                                                <label for="user-add-password" class="col-form-label">密码</label>
-                                                <input type="text" class="form-control" id="user-add-password"
-                                                       placeholder="请输入8位及其以上的密码">
+                                                <label for="user-add-realname" class="col-form-label">姓名</label>
+                                                <input type="text" class="form-control" id="user-add-realname" placeholder="请输入姓名">
                                             </div>
-                                            <div id="error_message2" style="color: red"></div>
+                                            <div class="form-group">
+                                                <label for="user-add-sex" class="col-form-label">性别</label>
+                                                <select class="form-control" id="user-add-sex">
+                                                    <option value="1">男</option>
+                                                    <option value="0">女</option>
+                                                </select>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="user-add-hometown" class="col-form-label">籍贯</label>
+                                                <input type="text" class="form-control" id="user-add-hometown" placeholder="请输入籍贯">
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label for="user-add-enrollment-date" class="col-form-label">入学时间</label>
+                                                <input type="date" class="form-control" id="user-add-enrollment-date" placeholder="选择入学日期">
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label for="user-add-student-type" class="col-form-label">学生类别</label>
+                                                <input type="text" class="form-control" id="user-add-student-type" placeholder="请输入学生类别">
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label for="user-add-major" class="col-form-label">报读专业</label>
+                                                <input type="text" class="form-control" id="user-add-major" placeholder="请输入专业名称">
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label for="user-add-fellowship" class="col-form-label">所属团契</label>
+                                                <input type="text" class="form-control" id="user-add-fellowship" placeholder="请输入团契名称">
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label for="user-add-phone" class="col-form-label">电话</label>
+                                                <input type="text" class="form-control" id="user-add-phone" placeholder="请输入电话号码">
+                                            </div>
+                                            <div id="error_message4" style="color: red"></div>
+<!--                                            <div class="form-group">-->
+<!--                                                <label for="user-add-password" class="col-form-label">密码</label>-->
+<!--                                                <input type="text" class="form-control" id="user-add-password"-->
+<!--                                                       placeholder="请输入8位及其以上的密码">-->
+<!--                                            </div>-->
+<!--                                            <div id="error_message2" style="color: red"></div>-->
                                             <div class="form-group">
                                                 <label for="user-add-email" class="col-form-label">邮箱地址</label>
                                                 <input type="email" class="form-control" id="user-add-email"
                                                        placeholder="请输入合法的邮箱地址">
                                             </div>
                                             <div id="error_message3" style="color: red"></div>
-                                            <div class="form-group">
-                                                <label for="role-name">角色</label>
-                                                <select class="form-control" id="role-name">
+<!--                                            <div class="form-group">-->
+<!--                                                <label for="role-name">角色</label>-->
+<!--                                                <select class="form-control" id="role-name">-->
 
-                                                </select>
-                                            </div>
-                                            <div class="form-group">
-                                                <label for="user-add-status">是否启用</label>
-                                                <select class="form-control" id="user-add-status">
-                                                    <option value="1">启用</option>
-                                                    <option value="0">禁用</option>
-                                                </select>
-                                            </div>
+<!--                                                </select>-->
+<!--                                            </div>-->
+<!--                                            <div class="form-group">-->
+<!--                                                <label for="user-add-status">是否启用</label>-->
+<!--                                                <select class="form-control" id="user-add-status">-->
+<!--                                                    <option value="1">启用</option>-->
+<!--                                                    <option value="0">禁用</option>-->
+<!--                                                </select>-->
+<!--                                            </div>-->
                                             <div class="form-group">
                                                 <label for="user-add-description"
                                                        class="col-form-label">描述</label>
@@ -150,30 +225,72 @@
                                     <div class="modal-body">
                                         <form>
                                             <div class="form-group">
-                                                <label for="user-edit-username" class="col-form-label">用户名</label>
+                                                <label for="user-edit-username" class="col-form-label">学号</label>
                                                 <input type="text" class="form-control" id="user-edit-username">
                                             </div>
                                             <div class="form-group">
-                                                <label for="user-edit-password" class="col-form-label">密码</label>
-                                                <input type="text" class="form-control" id="user-edit-password">
+                                                <label for="user-edit-realname" class="col-form-label">姓名</label>
+                                                <input type="text" class="form-control" id="user-edit-realname" placeholder="请输入姓名">
                                             </div>
+                                            <div class="form-group">
+                                                <label for="user-edit-sex" class="col-form-label">性别</label>
+                                                <select class="form-control" id="user-edit-sex">
+                                                    <option value="1">男</option>
+                                                    <option value="0">女</option>
+                                                </select>
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label for="user-edit-hometown" class="col-form-label">籍贯</label>
+                                                <input type="text" class="form-control" id="user-edit-hometown" placeholder="请输入籍贯">
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label for="user-edit-enrollment-date" class="col-form-label">入学时间</label>
+                                                <input type="date" class="form-control" id="user-edit-enrollment-date" placeholder="选择入学日期">
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label for="user-edit-student-type" class="col-form-label">学生类别</label>
+                                                <input type="text" class="form-control" id="user-edit-student-type" placeholder="请输入学生类别">
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label for="user-edit-major" class="col-form-label">报读专业</label>
+                                                <input type="text" class="form-control" id="user-edit-major" placeholder="请输入专业名称">
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label for="user-edit-fellowship" class="col-form-label">所属团契</label>
+                                                <input type="text" class="form-control" id="user-edit-fellowship" placeholder="请输入团契名称">
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label for="user-edit-phone" class="col-form-label">电话</label>
+                                                <input type="text" class="form-control" id="user-edit-phone" placeholder="请输入电话号码">
+                                            </div>
+
+                                            <!--                                            <div class="form-group">-->
+<!--                                                <label for="user-edit-password" class="col-form-label">密码</label>-->
+<!--                                                <input type="text" class="form-control" id="user-edit-password">-->
+<!--                                            </div>-->
                                             <div class="form-group">
                                                 <label for="user-edit-email" class="col-form-label">邮箱地址</label>
                                                 <input type="email" class="form-control" id="user-edit-email">
                                             </div>
 
-                                            <div class="form-group">
-                                                <label for="edit-role-name">角色</label>
-                                                <select class="form-control" id="edit-role-name">
-                                                </select>
-                                            </div>
-                                            <div class="form-group">
-                                                <label for="user-edit-status">是否启用</label>
-                                                <select class="form-control" id="user-edit-status">
-                                                    <option value=1>启用</option>
-                                                    <option value=0>禁用</option>
-                                                </select>
-                                            </div>
+<!--                                            <div class="form-group">-->
+<!--                                                <label for="edit-role-name">角色</label>-->
+<!--                                                <select class="form-control" id="edit-role-name">-->
+<!--                                                </select>-->
+<!--                                            </div>-->
+<!--                                            <div class="form-group">-->
+<!--                                                <label for="user-edit-status">是否启用</label>-->
+<!--                                                <select class="form-control" id="user-edit-status">-->
+<!--                                                    <option value=1>启用</option>-->
+<!--                                                    <option value=0>禁用</option>-->
+<!--                                                </select>-->
+<!--                                            </div>-->
                                             <div class="form-group">
                                                 <label for="user-edit-description"
                                                        class="col-form-label">描述</label>
@@ -217,6 +334,7 @@
 <script type="text/javascript" src="static/js/bootstrap-maxlength/bootstrap-maxlength.min.js"></script>
 <script type="text/javascript" src="static/js/bootstrap-table/bootstrap-table.min.js"></script>
 <script type="text/javascript" src="static/js/bootstrap-table/extensions/export/bootstrap-table-export.min.js"></script>
+<script type="text/javascript" src="static/js/tableExport.min.js"></script>
 <script type="text/javascript" src="static/js/bootstrap-table/locale/bootstrap-table-zh-CN.min.js"></script>
 <script type="text/javascript" src="static/js/jquery-confirm/jquery-confirm.min.js"></script>
 <script type="text/javascript" src="static/js/jquery-treegrid/jquery.treegrid.min.js"></script>
@@ -259,67 +377,126 @@
             pageNumber: 1,                       // 初始化加载第一页，默认第一页
             pageSize: 10,                        // 每页的记录行数
             pageList: [10, 20, 50, 100],         // 可供选择的每页的行数
-            search: false,                      // 是否显示表格搜索，此搜索是客户端搜索
+            search: true,                      // 是否显示表格搜索，此搜索是客户端搜索
             showExport: true,        // 是否显示导出按钮, 导出功能需要导出插件支持(tableexport.min.js)
             exportDataType: "all", // 导出数据类型, 'basic':当前页, 'all':所有数据, 'selected':选中的数据
 
             columns: [{
                 field: 'example',
                 checkbox: true    // 是否显示复选框
-            }, {
+            },
+                {
                 field: 'id', //columns里的field的值必须和后端返回的字段名一样
                 title: 'ID', //columns里的title的值就是表格列名
                 sortable: true,    // 是否排序
                 align: 'center',
-            }, {
+                visible: false,
+            },
+                {
                 field: 'username',
-                title: '用户名',
+                title: '学号',
                 align: 'center',
             }, {
+                field: 'name',
+                title: '姓名',
+                align: 'center',
+            },{
+                field: 'sex',
+                title: '性别',
+                align: 'center',
+                formatter: function (value, row, index) {
+                            var value = "";
+                            if (row.sex == 1) {
+                                value = '<span class="badge badge-success">男</span>';
+                            } else if (row.sex == 0) {
+                                value = '<span class="badge badge-info">女</span>';
+                            } else {
+                                value = '未知';
+                            }
+                            return value;
+                        }
+            },{
+                field: 'hometown',
+                title: '籍贯',
+                align: 'center',
+            }, {
+                field: 'enrollment_date',
+                title: '入学时间',
+                align: 'center',
+                formatter: function(value) {
+                    if (value) {
+                        let date = new Date(value);
+                        let year = date.getFullYear();
+                        let month = String(date.getMonth() + 1).padStart(2, '0'); // 月份从0开始计数
+                        let day = String(date.getDate()).padStart(2, '0');
+                        return `${year}-${month}-${day}`;
+                    }
+                    return '';
+                }
+            },{
+                field: 'student_type',
+                title: '学生类别',
+                align: 'center',
+            },{
+                field: 'major',
+                title: '报读专业',
+                align: 'center',
+            },{
+                field: 'fellowship',
+                title: '所属团契',
+                align: 'center',
+            },{
+                field: 'phone',
+                title: '电话',
+                align: 'center',
+            },{
                 field: 'email',
                 title: '邮箱地址',
                 align: 'center',
-            }, {
-                field: 'role_id',
-                title: '角色',
-                align: 'center',
-                formatter: function (value, row, index) {
-                    var value = "";
-                    if (row.role_id == '1') {
-                        value = '<span class="badge badge-success">管理员</span>';
-                    } else if (row.role_id == '2') {
-                        value = '<span class="badge badge-info">教师</span>';
-                    } else if (row.role_id == '3') {
-                        value = '<span class="badge badge-info">学生</span>';
-                    } else {
-                        value = '未知';
-                    }
-                    return value;
-                }
-            }, {
-                field: 'register_time',
-                title: '注册时间',
-                align: 'center',
-            }, {
-                field: 'last_login_time',
-                title: '最后登录时间',
-                align: 'center',
-            }, {
-                field: 'status',
-                title: '状态',
-                align: 'center',
-                formatter: function (value, row, index) {
-                    var value = "";
-                    if (row.status == '0') {
-                        value = '<span class="badge badge-danger">禁用</span>';
-                    } else if (row.status == '1') {
-                        value = '<span class="badge badge-success">启用</span>';
-                    } else {
-                        value = row.pType;
-                    }
-                    return value;
-                }
-            }, {
+            },
+            //     {
+            //     field: 'role_id',
+            //     title: '角色',
+            //     align: 'center',
+            //     formatter: function (value, row, index) {
+            //         var value = "";
+            //         if (row.role_id == '1') {
+            //             value = '<span class="badge badge-success">管理员</span>';
+            //         } else if (row.role_id == '2') {
+            //             value = '<span class="badge badge-info">教师</span>';
+            //         } else if (row.role_id == '3') {
+            //             value = '<span class="badge badge-info">学生</span>';
+            //         } else {
+            //             value = '未知';
+            //         }
+            //         return value;
+            //     }
+            // },
+            //     {
+            //     field: 'register_time',
+            //     title: '注册时间',
+            //     align: 'center',
+            // }, {
+            //     field: 'last_login_time',
+            //     title: '最后登录时间',
+            //     align: 'center',
+            // }, {
+            //     field: 'status',
+            //     title: '状态',
+            //     align: 'center',
+            //     formatter: function (value, row, index) {
+            //         var value = "";
+            //         if (row.status == '0') {
+            //             value = '<span class="badge badge-danger">禁用</span>';
+            //         } else if (row.status == '1') {
+            //             value = '<span class="badge badge-success">启用</span>';
+            //         } else {
+            //             value = row.pType;
+            //         }
+            //         return value;
+            //     }
+            // },
+                {
                 field: 'description',
                 title: '备注',
                 align: 'center',
@@ -352,13 +529,21 @@
         // 添加用户
         $('#btn-add').click(function () {
             var username = $('#user-add-name').val();
-            var password = $('#user-add-password').val();
+            var password = username;
+            var name = $('#user-add-realname').val();
             var email = $('#user-add-email').val();
-            var role = $('#role-name').val();
-            var status = $('#user-add-status').val();
+            var role = '3';
+            var status = '1';
             var description = $('#user-add-description').val();
+            var sex = $('#user-add-sex').val();
+            var hometown = $('#user-add-hometown').val();
+            var enrollmentDate = $('#user-add-enrollment-date').val();
+            var studentType = $('#user-add-student-type').val();
+            var major = $('#user-add-major').val();
+            var fellowship = $('#user-add-fellowship').val();
+            var phone = $('#user-add-phone').val();
             if (!validateUsername(username)) {
-                document.getElementById("error_message1").textContent = "用户名不能为空";
+                document.getElementById("error_message1").textContent = "学号不能为空";
                 return;
             }
             ;
@@ -375,23 +560,44 @@
             }
             ;
 
+            if (!validatePhone(phone)) {
+                document.getElementById("error_message4").textContent = "手机号不合法";
+                return;
+            }
+            ;
+
             sendPostRequest('/user/add', {
                 username: username,
                 password: password,
+                name: name,
                 email: email,
                 role: role,
                 status: parseInt(status),
-                description: description
+                description: description,
+                sex: parseInt(sex),
+                hometown: hometown,
+                enrollment_date: enrollmentDate,
+                student_type: studentType,
+                major: major,
+                fellowship: fellowship,
+                phone: phone
             }, function (data) {
                 if (data.success) {
                     // 前端更新表格数据，添加该条目（仅仅是前端更新）
                     $('#tb_departments').bootstrapTable('append', {
                         username: username,
                         email: email,
-                        role: role,
+                        name: name,
+                        role: parseInt(role),
                         status: status,
                         description: description,
-
+                        sex: sex,
+                        hometown: hometown,
+                        enrollment_date: enrollmentDate,
+                        student_type: studentType,
+                        major: major,
+                        fellowship: fellowship,
+                        phone: phone
                     });
                     notice(data.message, 'success');
                 } else {
@@ -520,11 +726,23 @@
         // 填充模态框中的表单
         $('#exampleModalEdit #exampleModalEditTitle').text('编辑条目');
         $('#exampleModalEdit #user-edit-username').val(row.username);
+        $('#exampleModalEdit #user-edit-realname').val(row.name);
         $('#exampleModalEdit #user-edit-username').prop('disabled', true);
         $('#exampleModalEdit #user-edit-email').val(row.email);
         $('#exampleModalEdit #edit-role-name').val(row.role_id);
         $('#exampleModalEdit #user-edit-status').val(row.status);
         $('#exampleModalEdit #user-edit-description').val(row.description);
+        $('#exampleModalEdit #user-edit-sex').val(row.sex);
+        $('#exampleModalEdit #user-edit-hometown').val(row.hometown);
+        $('#exampleModalEdit #user-edit-student-type').val(row.student_type);
+        $('#exampleModalEdit #user-edit-major').val(row.major);
+        $('#exampleModalEdit #user-edit-fellowship').val(row.fellowship);
+        $('#exampleModalEdit #user-edit-phone').val(row.phone);
+        if (row.enrollment_date) {
+            const date = new Date(row.enrollment_date);
+            const formattedDate = date.toISOString().split('T')[0]; // 转换为 YYYY-MM-DD
+            $('#user-edit-enrollment-date').val(formattedDate);
+        }
         // 存储当前行的 id
         var currentRowId = row.id;
         // 显示模态框
@@ -539,32 +757,58 @@
         // 从按钮数据中获取当前行的 id
         var currentRowId = $(this).data('current-row-id');
         var username = $('#exampleModalEdit #user-edit-username').val();
-        var password = $('#exampleModalEdit #user-edit-password').val();
+        var name = $('#exampleModalEdit #user-edit-realname').val()
+        var password = $('#exampleModalEdit #user-edit-username').val();
         var email = $('#exampleModalEdit #user-edit-email').val();
-        var role = $('#exampleModalEdit #edit-role-name').val();
-        var status = $('#exampleModalEdit #user-edit-status').val();
+        var role = '3';
+        var status = '1';
         var description = $('#exampleModalEdit #user-edit-description').val();
+        var sex = $('#exampleModalEdit #user-edit-sex').val();
+        var hometown = $('#exampleModalEdit #user-edit-hometown').val();
+        var enrollmentDate = $('#exampleModalEdit #user-edit-enrollment-date').val();
+        var studentType = $('#exampleModalEdit #user-edit-student-type').val();
+        var major = $('#exampleModalEdit #user-edit-major').val();
+        var fellowship = $('#exampleModalEdit #user-edit-fellowship').val();
+        var phone = $('#exampleModalEdit #user-edit-phone').val();
+
 
         sendPostRequest('/user/update', {
             username: username,
+            name: name,
             password: password,
             email: email,
             role: parseInt(role),
             status: status,
-            description: description
+            description: description,
+            sex: parseInt(sex),
+            hometown: hometown,
+            enrollment_date: enrollmentDate,
+            student_type: studentType,
+            major: major,
+            fellowship: fellowship,
+            phone: phone
         }, function (data) {
             if (data.success) {
                 notice(data.message, 'success');
-                // 前端更新表格数据，添加该条目（仅仅是前端更新）
-                $('#tb_departments').bootstrapTable('updateRow', {
-                    index: currentRowId - 1, // 使用 id 获取行索引
+                // 获取表格数据，找到行索引
+                $('#tb_departments').bootstrapTable('updateByUniqueId', {
+                    // index: currentRowId - 1, // 使用 id 获取行索引
+                    id: currentRowId,
                     row: {
                         id: currentRowId, // 使用获取到的 id
                         username: username,
+                        name: name,
                         email: email,
                         role: role,
                         status: status,
-                        description: description
+                        description: description,
+                        sex: sex,
+                        hometown: hometown,
+                        enrollment_date: enrollmentDate,
+                        student_type: studentType,
+                        major: major,
+                        fellowship: fellowship,
+                        phone: phone
                     }
                 });
             } else {
@@ -592,7 +836,7 @@
         $.confirm({
             title: '操作确认',
             escapeKey: true,
-            content: '确定要删除此条目吗?',
+            content: '确定要删除此条目吗？<br>注：如果成绩表中有对应的学生，会删除失败',
             backgroundDismiss: true,
             buttons: {
                 okay: {
@@ -628,6 +872,57 @@
             },
         });
     }
+    $(document).ready(function () {
+        $('#btn-upload').click(function () {
+            const file = $('#fileInput')[0].files[0];
+            if (!file) {
+                alert('请先选择一个文件');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('file', file);
+
+            $.ajax({
+                url: '/user/import',
+                type: 'POST',
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function (response) {
+                    if (response.success) {
+                        alert('文件上传成功，学生已导入');
+                        $('#importModal').modal('hide');
+                        location.reload();  // 刷新页面
+                    } else {
+                        alert('导入失败：' + response.message);
+                    }
+                },
+                error: function () {
+                    alert('文件上传失败，请重试');
+                }
+            });
+        });
+    });
+
+    function accessControl() {
+        const role = localStorage.getItem('role');
+
+        if (role === '1') {
+            // 如果 role 等于 '1'，显示按钮
+            document.getElementById('btn_add').style.display = 'inline-block';
+            document.getElementById('btn_delete').style.display = 'inline-block';
+            document.getElementById('btn_import').style.display = 'inline-block';
+        } else {
+            // 隐藏“操作”列
+            $('#tb_departments').bootstrapTable('hideColumn', 'operate');
+        }
+    }
+
+    // 页面加载时调用 accessControl 函数
+    $(document).ready(function () {
+        accessControl();
+    });
 </script>
 </body>
 </html>

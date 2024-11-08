@@ -1,0 +1,4 @@
+[2024-11-01 16:54:15] | DEBUG | app.py:print_request_info:51 | 接口请求地址:http://127.0.0.1:8888/course?query=计算机
+[2024-11-01 16:54:15] | DEBUG | app.py:print_request_info:58 | 接口请求数据:
+[2024-11-01 16:54:17] | DEBUG | app.py:print_request_info:51 | 接口请求地址:http://127.0.0.1:8888/course?query=计算机
+[2024-11-01 16:54:17] | DEBUG | app.py:print_request_info:58 | 接口请求数据:

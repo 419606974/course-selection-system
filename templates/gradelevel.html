@@ -98,12 +98,21 @@
                                                        maxlength="32"
                                                        placeholder="请输入最小成绩">
                                             </div>
+                                            <div id="error_message1" style="color: red"></div>
                                             <div class="form-group">
                                                 <label for="add-max" class="col-form-label">最大成绩</label>
                                                 <input type="text" class="form-control" id="add-max"
                                                        maxlength="32"
                                                        placeholder="请输入最大成绩">
                                             </div>
+                                            <div id="error_message2" style="color: red"></div>
+                                            <div class="form-group">
+                                                <label for="add-gpa" class="col-form-label">绩点</label>
+                                                <input type="text" class="form-control" id="add-gpa"
+                                                       maxlength="32"
+                                                       placeholder="请输入绩点">
+                                            </div>
+                                            <div id="error_message3" style="color: red"></div>
                                         </form>
                                     </div>
                                     <div class="modal-footer">
@@ -140,10 +149,17 @@
                                                 <label for="edit-min" class="col-form-label">最小成绩</label>
                                                 <input type="text" class="form-control" id="edit-min">
                                             </div>
+                                            <div id="error_message4" style="color: red"></div>
                                             <div class="form-group">
                                                 <label for="edit-max" class="col-form-label">最大成绩</label>
                                                 <input type="text" class="form-control" id="edit-max">
                                             </div>
+                                            <div id="error_message5" style="color: red"></div>
+                                            <div class="form-group">
+                                                <label for="edit-gpa" class="col-form-label">绩点</label>
+                                                <input type="text" class="form-control" id="edit-gpa">
+                                            </div>
+                                            <div id="error_message6" style="color: red"></div>
                                         </form>
                                     </div>
                                     <div class="modal-footer">
@@ -255,11 +271,25 @@
                 field: 'min_score',
                 title: '最小成绩',
                 align: 'center',
+                formatter: function (value) {
+                    return Number(value).toString();
+                }
             },{
                 field: 'max_score',
                 title: '最大成绩',
                 align: 'center',
-            }, {
+                formatter: function (value) {
+                    return Number(value).toString();
+                }
+            },{
+                field: 'gpa',
+                title: '绩点',
+                align: 'center',
+                searchable: true,
+                formatter: function (value) {
+                    return Number(value).toString();
+                }
+            },{
                 field: 'operate',
                 title: '操作',
                 align: 'center',
@@ -286,18 +316,63 @@
 
     });
 
+    function isValidScore(value) {
+        // 判断是否是数字，并且在有效范围内
+        if (isNaN(value)) return false;
+
+        const num = parseFloat(value);
+        if (num < 0) return false;
+
+        // 限制最多两位小数
+        // 用正则检查：允许整数，或者最多两位小数
+        return /^\d+(\.\d{1,2})?$/.test(value);
+    }
+
     $(function () {
         // 添加成绩分级
         $('#btn-add').click(function () {
-            var number = $('#add-number').val();
-            var name = $('#add-name').val();
-            var min_score = $('#add-min').val();
-            var max_score = $('#add-max').val();
+            $('#error_message1').text('');
+            $('#error_message2').text('');
+            $('#error_message3').text('');
+
+            var number = $('#add-number').val().trim();
+            var name = $('#add-name').val().trim();
+            var min_score = $('#add-min').val().trim();
+            var max_score = $('#add-max').val().trim();
+            var gpa = $('#add-gpa').val().trim();
+
+            let hasError = false;
+
+            if (!isValidScore(min_score)) {
+                $('#error_message1').text("请输入合法的分数值（最多两位小数）");
+                hasError = true;
+            }
+
+            if (!isValidScore(max_score)) {
+                $('#error_message2').text("请输入合法的分数值（最多两位小数）");
+                hasError = true;
+            }
+
+            if (!isValidScore(gpa)) {
+                $('#error_message3').text("请输入合法的绩点值（最多两位小数）");
+                hasError = true;
+            }
+
+            if (hasError) return;
+
+            // 检查 min 是否小于 max
+            if (parseFloat(min_score) > parseFloat(max_score)) {
+                $('#error_message1').text("最小分数不能大于最大分数");
+                hasError = true;
+            }
+
+            if (hasError) return;
             sendPostRequest('/gradelevel/add', {
                 number: number,
                 name: name,
-                min_score: parseInt(min_score),
-                max_score: parseInt(max_score),
+                min_score: parseFloat(min_score),
+                max_score: parseFloat(max_score),
+                gpa: parseFloat(gpa),
             }, function (data) {
                 if (data.success) {
                     // 前端更新表格数据，添加该条目（仅仅是前端更新）
@@ -306,6 +381,7 @@
                         name: name,
                         min_score: min_score,
                         max_score: max_score,
+                        gpa: gpa,
                     });
                     notice(data.message, 'success');
                 } else {
@@ -397,6 +473,7 @@
         $('#exampleModalEdit #edit-name').val(row.name);
         $('#exampleModalEdit #edit-min').val(row.min_score);
         $('#exampleModalEdit #edit-max').val(row.max_score);
+        $('#exampleModalEdit #edit-gpa').val(row.gpa);
         // 存储当前行的 id
         var currentRowId = row.id;
         // 显示模态框
@@ -408,42 +485,72 @@
 
     // 编辑角色保存
     $('#btn-edit-save').click(function () {
+        c
+        $('#error_message5').text('');
+        $('#error_message6').text('');
+
         // 从按钮数据中获取当前行的 id
         var currentRowId = $(this).data('current-row-id');
-        var number = $('#exampleModalEdit #edit-number').val();
-        var name = $('#exampleModalEdit #edit-name').val();
-        var min_score = $('#exampleModalEdit #edit-min').val();
-        var max_score = $('#exampleModalEdit #edit-max').val();
+        var number = $('#exampleModalEdit #edit-number').val().trim();
+        var name = $('#exampleModalEdit #edit-name').val().trim();
+        var min_score = $('#exampleModalEdit #edit-min').val().trim();
+        var max_score = $('#exampleModalEdit #edit-max').val().trim();
+        var gpa = $('#exampleModalEdit #edit-gpa').val().trim();
+
+        let hasError = false;
+
+        if (!isValidScore(min_score)) {
+            $('#error_message4').text("请输入合法的分数值（最多两位小数）");
+            hasError = true;
+        }
+
+        if (!isValidScore(max_score)) {
+            $('#error_message5').text("请输入合法的分数值（最多两位小数）");
+            hasError = true;
+        }
+
+        if (!isValidScore(gpa)) {
+            $('#error_message6').text("请输入合法的绩点值（最多两位小数）");
+            hasError = true;
+        }
+
+        if (hasError) return;
+
+        if (parseFloat(min_score) > parseFloat(max_score)) {
+            $('#error_message4').text("最小分数不能大于最大分数");
+            return;
+        }
+
+        // 一切合法后发请求
         sendPostRequest('/gradelevel/update', {
             id: currentRowId,
             number: number,
             name: name,
-            min_score: parseInt(min_score),
-            max_score: parseInt(max_score),
+            min_score: parseFloat(min_score),
+            max_score: parseFloat(max_score),
+            gpa: parseFloat(gpa),
         }, function (data) {
             if (data.success) {
                 notice(data.message, 'success');
-                // 前端更新表格数据，添加该条目（仅仅是前端更新）
                 $('#tb_departments').bootstrapTable('updateByUniqueId', {
-                    // index: currentRowId - 1, // 使用 id 获取行索引
                     id: currentRowId,
                     row: {
-                        id: currentRowId, // 使用获取到的 id
+                        id: currentRowId,
                         number: number,
                         name: name,
                         min_score: min_score,
                         max_score: max_score,
+                        gpa: gpa,
                     }
                 });
             } else {
                 notice(data.message, 'danger');
-
             }
         }, function (error) {
             console.error('Error:', error);
             notice('服务端错误', 'danger');
-
         });
+
         // 提交后关闭模态框
         $('#exampleModalEdit').modal('hide');
     });

@@ -245,6 +245,7 @@ def user_delete():
             return jsonify({'success': False, 'message': "存在该学生对应的成绩，请更改后再删除"})
         cmd = "DELETE FROM user WHERE id=%s;"
         result = db.execute_sql(cmd, request.json['id'])
+        ids_to_delete = request.json['id']
     elif 'ids' in request.json:
         ids_to_delete = request.json['ids']
         for id in ids_to_delete:
@@ -258,7 +259,7 @@ def user_delete():
         cmd = f"DELETE FROM user WHERE id IN ({placeholders})"
         result = db.execute_sql(cmd, ids_to_delete)
     if result:
-        insert_audit_log(request.remote_addr, current_user.id, "用户管理", ('删除用户,id: %s' % request.json['id']))
+        insert_audit_log(request.remote_addr, current_user.id, "用户管理", ('删除用户,id: %s' % ids_to_delete))
         return jsonify({'success': True, 'message': "删除成功!"})
     else:
         return jsonify({'success': False, 'message': "删除失败!"})

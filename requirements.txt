@@ -5,3 +5,4 @@ loguru==0.7.2
 Werkzeug==2.2.2
 pandas
 openpyxl
+cryptography

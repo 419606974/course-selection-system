@@ -120,7 +120,7 @@
                                     </div>
                                     <div class="modal-body">
                                         <p>请选择Excel文件进行上传，文件表头如下：</p>
-                                        <p><strong>编号，课程名，学分，年度，学期，开课时间，结课时间，授课时间，授课地点，授课老师编号</strong></p>
+                                        <p><strong>编号，课程名，学分，年度，学期，课程类别，开课时间，结课时间，授课时间，授课地点，授课老师姓名</strong></p>
                                         <input type="file" id="fileInput" accept=".xlsx, .xls" class="form-control-file">
                                     </div>
                                     <div class="modal-footer">
@@ -147,31 +147,37 @@
                                                 <label for="course-add-number" class="col-form-label">课程编号</label>
                                                 <input type="text" class="form-control" id="course-add-number"
                                                        maxlength="32"
-                                                       placeholder="请输入课程编号">
+                                                       placeholder="请输入该课程编号">
                                             </div>
                                             <div class="form-group">
                                                 <label for="course-add-name" class="col-form-label">课程名字</label>
                                                 <input type="text" class="form-control" id="course-add-name"
                                                        maxlength="32"
-                                                       placeholder="请输入课程名">
+                                                       placeholder="请输入该课程名称">
                                             </div>
                                             <div class="form-group">
                                                 <label for="course-add-credits" class="col-form-label">学分</label>
                                                 <input type="text" class="form-control" id="course-add-credits"
                                                        maxlength="32"
-                                                       placeholder="请输入课程学分">
+                                                       placeholder="请输入该课程所占学分">
                                             </div>
                                             <div class="form-group">
                                                 <label for="course-add-year" class="col-form-label">年度</label>
                                                 <input type="text" class="form-control" id="course-add-year"
                                                        maxlength="32"
-                                                       placeholder="请输入课程年度">
+                                                       placeholder="请输入该课程所属年度">
                                             </div>
                                             <div class="form-group">
                                                 <label for="course-add-semester" class="col-form-label">学期</label>
                                                 <input type="text" class="form-control" id="course-add-semester"
                                                        maxlength="32"
-                                                       placeholder="请输入课程学期">
+                                                       placeholder="请输入该课程所属学期">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="course-add-category" class="col-form-label">课程类别</label>
+                                                <input type="text" class="form-control" id="course-add-category"
+                                                       maxlength="32"
+                                                       placeholder="请输入该课程所属类别，比如本科或硕士">
                                             </div>
                                             <div class="form-group">
                                                 <label for="course-add-startdate" class="col-form-label">开课时间</label>
@@ -190,26 +196,32 @@
                                                 <label for="course-add-time" class="col-form-label">授课时间</label>
                                                 <input type="text" class="form-control" id="course-add-time"
                                                        maxlength="32"
-                                                       placeholder="请输入授课时间">
+                                                       placeholder="请输入授课时间，可空">
                                             </div>
                                             <div class="form-group">
                                                 <label for="course-add-place" class="col-form-label">授课地点</label>
                                                 <input type="text" class="form-control" id="course-add-place"
                                                        maxlength="32"
-                                                       placeholder="请输入授课地点">
+                                                       placeholder="请输入授课地点，可空">
                                             </div>
                                             <div class="form-group">
-                                                <label for="course-add-teachernum" class="col-form-label">授课老师编号</label>
-                                                <div class="input-group">
-                                                    <input type="text" class="form-control" id="course-add-teachernum"
-                                                           maxlength="32"
-                                                           placeholder="请输入授课老师编号">
-                                                    <div class="input-group-append">
-                                                        <button id="btn-validate-teacher" type="button" class="btn btn-primary">校验</button>
-                                                    </div>
-                                                </div>
+                                                <label for="course-add-teacher" class="col-form-label">授课老师姓名</label>
+                                                <input type="text" class="form-control" id="course-add-teacher"
+                                                       maxlength="32"
+                                                       placeholder="请输入授课老师姓名">
                                             </div>
-                                            <div id="teacher-info" class="mt-2" style="display: none; color: #007bff;"></div>
+<!--                                            <div class="form-group">-->
+<!--                                                <label for="course-add-teachernum" class="col-form-label">授课老师编号</label>-->
+<!--                                                <div class="input-group">-->
+<!--                                                    <input type="text" class="form-control" id="course-add-teachernum"-->
+<!--                                                           maxlength="32"-->
+<!--                                                           placeholder="请输入授课老师编号">-->
+<!--                                                    <div class="input-group-append">-->
+<!--                                                        <button id="btn-validate-teacher" type="button" class="btn btn-primary">校验</button>-->
+<!--                                                    </div>-->
+<!--                                                </div>-->
+<!--                                            </div>-->
+<!--                                            <div id="teacher-info" class="mt-2" style="display: none; color: #007bff;"></div>-->
 <!--                                            <div class="form-group">-->
 <!--                                                <label for="course-add-stunumber" class="col-form-label">授课人数</label>-->
 <!--                                                <input type="text" class="form-control" id="course-add-stunumber"-->
@@ -264,6 +276,10 @@
                                                 <input type="text" class="form-control" id="course-edit-semester">
                                             </div>
                                             <div class="form-group">
+                                                <label for="course-edit-category" class="col-form-label">课程类别</label>
+                                                <input type="text" class="form-control" id="course-edit-category">
+                                            </div>
+                                            <div class="form-group">
                                                 <label for="course-edit-startdate" class="col-form-label">开课时间</label>
                                                 <input type="date" class="form-control" id="course-edit-startdate">
                                             </div>
@@ -280,15 +296,19 @@
                                                 <input type="text" class="form-control" id="course-edit-place">
                                             </div>
                                             <div class="form-group">
-                                                <label for="course-edit-teachernum" class="col-form-label">授课老师编号</label>
-                                                <div class="input-group">
-                                                    <input type="text" class="form-control" id="course-edit-teachernum">
-                                                    <div class="input-group-append">
-                                                        <button id="btn-validate-edit-teacher" type="button" class="btn btn-primary">校验</button>
-                                                    </div>
-                                                </div>
+                                                <label for="course-edit-teacher" class="col-form-label">授课老师姓名</label>
+                                                <input type="text" class="form-control" id="course-edit-teacher">
                                             </div>
-                                            <div id="edit-teacher-info" class="mt-2" style="display: none; color: #007bff;"></div>
+<!--                                            <div class="form-group">-->
+<!--                                                <label for="course-edit-teachernum" class="col-form-label">授课老师编号</label>-->
+<!--                                                <div class="input-group">-->
+<!--                                                    <input type="text" class="form-control" id="course-edit-teachernum">-->
+<!--                                                    <div class="input-group-append">-->
+<!--                                                        <button id="btn-validate-edit-teacher" type="button" class="btn btn-primary">校验</button>-->
+<!--                                                    </div>-->
+<!--                                                </div>-->
+<!--                                            </div>-->
+<!--                                            <div id="edit-teacher-info" class="mt-2" style="display: none; color: #007bff;"></div>-->
 <!--                                            <div class="form-group">-->
 <!--                                                <label for="course-edit-stunumber" class="col-form-label">授课人数</label>-->
 <!--                                                <input type="text" class="form-control" id="course-edit-stunumber">-->
@@ -408,6 +428,10 @@
             },{
                 field: 'semester',
                 title: '学期',
+                align: 'center',
+            },{
+                field: 'category',
+                title: '类别',
                 align: 'center',
             }, {
                 field: 'startdate',
@@ -573,11 +597,12 @@
             var credits = $('#course-add-credits').val();
             var year = $('#course-add-year').val();
             var semester = $('#course-add-semester').val();
+            var category = $('#course-add-category').val();
             var startdate = $('#course-add-startdate').val();
             var enddate = $('#course-add-enddate').val();
             var time = $('#course-add-time').val();
             var place = $('#course-add-place').val();
-            var teachernum = $('#course-add-teachernum').val();
+            var teacher_name = $('#course-add-teacher').val();
             // var stunumber = $('#course-add-stunumber').val();
             if (!validateStringLength(name, 1, 32)) {
                 document.getElementById("error_message1").textContent = "课程名长度不合法";
@@ -585,30 +610,18 @@
             }
             ;
 
-            if (!validateStringLength(time, 1, 32)) {
-                document.getElementById("error_message2").textContent = "授课时间长度不合法";
-                return;
-            }
-            ;
-
-            if (!validateStringLength(place, 1, 32)) {
-                document.getElementById("error_message2").textContent = "授课地点长度不合法";
-                return;
-            }
-            ;
-
-
             sendPostRequest('/course/add', {
                 number: number,
                 name: name,
                 credits: credits,
                 year: year,
                 semester: semester,
+                category: category,
                 startdate: startdate,
                 enddate:enddate,
                 teachingTime: time,
                 teachingPlace: place,
-                teachernum: teachernum,
+                teacher_name: teacher_name,
             }, function (data) {
                 if (data.success) {
                     // 前端更新表格数据，添加该条目（仅仅是前端更新）
@@ -619,11 +632,12 @@
                         credits: credits,
                         year: year,
                         semester: semester,
+                        category: category,
                         startdate: startdate,
                         enddate:enddate,
                         teaching_time: time,
                         teaching_place: place,
-                        teacher_name: data.teacher_name,
+                        teacher_name: teacher_name,
                     });
                     notice(data.message, 'success');
                 } else {
@@ -729,6 +743,7 @@
         $('#exampleModalEdit #course-edit-credits').val(row.credits);
         $('#exampleModalEdit #course-edit-year').val(row.year);
         $('#exampleModalEdit #course-edit-semester').val(row.semester);
+        $('#exampleModalEdit #course-edit-category').val(row.category);
         if (row.startdate) {
             const date = new Date(row.startdate);
             const formattedDate = date.toISOString().split('T')[0]; // 转换为 YYYY-MM-DD
@@ -741,7 +756,7 @@
         }
         $('#exampleModalEdit #course-edit-time').val(row.teaching_time);
         $('#exampleModalEdit #course-edit-place').val(row.teaching_place);
-        $('#exampleModalEdit #course-edit-teachernum').val(row.teacher_number);
+        $('#exampleModalEdit #course-edit-teacher').val(row.teacher_name);
         // $('#exampleModalEdit #course-edit-stunumber').val(row.allow_stu_num);
         // 存储当前行的 id
         var currentRowId = row.id;
@@ -761,11 +776,12 @@
         var credits = $('#exampleModalEdit #course-edit-credits').val();
         var year = $('#exampleModalEdit #course-edit-year').val();
         var semester = $('#exampleModalEdit #course-edit-semester').val();
+        var semester = $('#exampleModalEdit #course-edit-category').val();
         var startdate = $('#exampleModalEdit #course-edit-startdate').val();
         var enddate = $('#exampleModalEdit #course-edit-enddate').val();
         var updateTime = $('#exampleModalEdit #course-edit-time').val();
         var updatePlace = $('#exampleModalEdit #course-edit-place').val();
-        var teachernum = $('#exampleModalEdit #course-edit-teachernum').val();
+        var teacher_name = $('#exampleModalEdit #course-edit-teacher').val();
         // var updateNumber = $('#exampleModalEdit #course-edit-stunumber').val();
         sendPostRequest('/course/update', {
             number: number,
@@ -773,11 +789,12 @@
             credits: credits,
             year: year,
             semester: semester,
+            category: category,
             startdate: startdate,
             enddate:enddate,
             updateTime: updateTime,
             updatePlace: updatePlace,
-            teachernum: teachernum,
+            teacher_name: teacher_name,
             // updateNumber: updateNumber,
         }, function (data) {
             if (data.success) {
@@ -793,11 +810,12 @@
                         credits: credits,
                         year: year,
                         semester: semester,
+                        category: category,
                         startdate: startdate,
                         enddate:enddate,
                         teaching_time: updateTime,
                         teaching_place: updatePlace,
-                        teacher_name: data.teacher_name,
+                        teacher_name: teacher_name,
                         // allow_stu_num: updateNumber
                     }
                 });

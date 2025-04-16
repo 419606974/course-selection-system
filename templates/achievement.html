@@ -260,6 +260,7 @@
                                                 <label for="achievement-edit-score" class="col-form-label">成绩</label>
                                                 <input type="text" class="form-control" id="achievement-edit-score">
                                             </div>
+                                            <div id="error_message2" style="color: red"></div>
                                         </form>
                                     </div>
                                     <div class="modal-footer">
@@ -385,6 +386,14 @@
                 field: 'course_name',
                 title: '课程名称',
                 align: 'center',
+            },{
+                field: 'course_cate',
+                title: '课程类别',
+                align: 'center',
+            },{
+                field: 'teacher_name',
+                title: '授课老师',
+                align: 'center',
             }, {
                 field: 'student_no',
                 title: '学生学号',
@@ -398,9 +407,18 @@
                 title: '成绩',
                 align: 'center',
                 sortable: true,
+                formatter: function (value) {
+                    // 如果是整数，比如 61.00，就变成 61；否则保留最多两位有效小数
+                    return Number(value).toString();
+                }
             }, {
                 field: 'gradelevel_name',
                 title: '成绩分级',
+                align: 'center',
+                searchable: true,
+            },{
+                field: 'gpa',
+                title: '绩点',
                 align: 'center',
                 searchable: true,
             }, {
@@ -500,20 +518,24 @@
         // 计算平均分并显示在表格下方
         function calculateAverageScore() {
             var data = $('#tb_departments').bootstrapTable('getData');
-            if (data.length === 0) {
+            var validScores = data
+                .map(row => parseFloat(row.score))
+                .filter(score => !isNaN(score));
+
+            if (validScores.length === 0) {
                 $('#average-score').remove();
                 return;
             }
 
-            var totalScore = data.reduce((sum, row) => sum + (row.score || 0), 0);
-            var averageScore = (totalScore / data.length).toFixed(2);
+            var totalScore = validScores.reduce((sum, score) => sum + score, 0);
+            var averageScore = (totalScore / validScores.length).toFixed(2);
 
             $('#average-score').remove();
             $('#tb_departments').after(`
-            <div id="average-score" class="mt-3" style="text-align: right; padding-right: 40px; font-size: 1.1em; font-weight: bold; color: #d9534f;">
-                平均分: ${averageScore}
-            </div>
-        `);
+                <div id="average-score" class="mt-3" style="text-align: right; padding-right: 40px; font-size: 1.1em; font-weight: bold; color: #d9534f;">
+                    平均分: ${averageScore}
+                </div>
+            `);
         }
     });
 
@@ -619,24 +641,36 @@
         });
     });
 
+    function isValidScore(value) {
+        // 判断是否是数字，并且在有效范围内
+        if (isNaN(value)) return false;
+
+        const num = parseFloat(value);
+        if (num < 0) return false;
+
+        // 限制最多两位小数
+        // 用正则检查：允许整数，或者最多两位小数
+        return /^\d+(\.\d{1,2})?$/.test(value);
+    }
+
     $(function () {
         // 添加成绩
         $('#btn-add').click(function () {
+            $('#error_message1').text('');
             // 获取两个下拉框的值
             var courseNo = $('#course-no').val();
             var studentNo = $('#student-no').val();
             var score = $('#achievement-add-score').val();
 
-            if (!isNumeric(score) || parseInt(score) < 0 || parseInt(score) > 10000) {
-                document.getElementById("error_message1").textContent = "请输入合法的分数值";
+            if (!isValidScore(score)) {
+                document.getElementById("error_message1").textContent = "请输入合法的分数值（最多两位小数）";
                 return;
             }
-            ;
 
             sendPostRequest('/achievement/add', {
                 courseNo: courseNo,
                 studentNo: studentNo,
-                score: parseInt(score),
+                score: parseFloat(score),
             }, function (data) {
                 if (data.success) {
                     // 前端更新表格数据，添加该条目（仅仅是前端更新）
@@ -824,17 +858,22 @@
 
     // 编辑成绩保存
     $('#btn-edit-save').click(function () {
+        $('#error_message2').text('');
         // 从按钮数据中获取当前行的 id
         var currentRowId = $(this).data('current-row-id');
         console.log(currentRowId)
         var courseNo = $('#exampleModalEdit #achievement-edit-courseno').val();
         var studentNo = $('#exampleModalEdit #achievement-edit-studentno').val();
         var newScore = $('#exampleModalEdit #achievement-edit-score').val();
+        if (!isValidScore(newScore)) {
+            document.getElementById("error_message2").textContent = "请输入合法的分数值（最多两位小数）";
+            return;
+        }
         sendPostRequest('/achievement/update', {
             id: currentRowId,
             courseNo: courseNo,
             studentNo: studentNo,
-            newScore: parseInt(newScore),
+            newScore: parseFloat(newScore),
         }, function (data) {
             if (data.success) {
                 notice(data.message, 'success');

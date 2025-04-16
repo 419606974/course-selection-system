@@ -83,6 +83,11 @@
                                             </div>
                                             <input class="form-control" type="text" name="semester" maxlength=32
                                                    placeholder="请输入学期，例如 3"/>
+                                            <div class="input-group-prepend input-group-append">
+                                                <span class="input-group-text">学生学号</span>
+                                            </div>
+                                            <input class="form-control" type="text" name="student_no" maxlength="32"
+                                                   placeholder="请输入学生学号"/>
                                             <div class="input-group-btn" style="margin-left: 20px">
                                                 <button id="search_btn" type="button" class="btn btn-success mr-2">
                                                     <i class="mdi mdi-magnify"></i>搜索
@@ -199,14 +204,24 @@
                 field: 'name',
                 title: '学生姓名',
                 align: 'center',
-            }, {
+            },{
                 field: 'average_score',
                 title: '平均分',
                 align: 'center',
                 sortable: true
+            },{
+                field: 'total_credits',
+                title: '总学分',
+                align: 'center',
+                sortable: true
+            },{
+                field: 'average_gpa',
+                title: '平均绩点',
+                align: 'center',
+                sortable: true
             }, {
                 field: 'operate',
-                title: '操作',
+                title: '详情',
                 align: 'center',
                 formatter: btnHandle,  // 自定义方法
                 events: {
@@ -249,9 +264,12 @@
                 <td>${item.course_semester}</td>
                 <td>${item.course_number}</td>
                 <td>${item.course_name}</td>
+                <td>${item.course_cate}</td>
+                <td>${item.course_credits}</td>
                 <td>${item.user_username}</td>
                 <td>${item.user_name}</td>
                 <td>${item.achievement_score}</td>
+                <td>${item.gradelevel_gpa}</td>
             </tr>
         `;
             $tableBody.append(row);
@@ -285,6 +303,7 @@
         // 选择年度和学期输入框
         var $yearInput = $('.form-control[name="year"]');
         var $semesterInput = $('.form-control[name="semester"]');
+        var $studentInput = $('.form-control[name="student_no"]');
 
         // 初始化：禁用学期输入框
         $semesterInput.prop('disabled', true);
@@ -302,26 +321,30 @@
 
         // 监听“搜索”按钮的点击事件
         $('#search_btn').on('click', function () {
-            // 如果年度为空，则显示提示并阻止搜索
-            if ($yearInput.val().trim() === '') {
-                alert('请先输入年度！');
-                return;
-            }
-
             // 获取年度和学期的值
             var time_info = {
                 year: $yearInput.val().trim(),
-                semester: $semesterInput.val().trim()
+                semester: $semesterInput.val().trim(),
+                student_no: $studentInput.val().trim()
             };
+            // 判断：如果 年度 和 学号 都为空
+            if (time_info.year === '' && time_info.student_no === '') {
+                alert('请至少输入“年度”或“学生学号”其中之一！');
+                return;
+            }
 
             // 发起请求，加载数据
-            $.getJSON('/average?year=' + time_info.year + '&semester=' + time_info.semester, function (data) {
+            let url = `/average?year=${time_info.year}`;
+            if (time_info.semester) url += `&semester=${time_info.semester}`;
+            if (time_info.student_no) url += `&student_no=${time_info.student_no}`;
+            $.getJSON(url, function (data) {
                 // 将年份和学期添加到每一行数据中
                 var updatedData = data.rows.map(row => {
                     return {
                         ...row,
                         year: time_info.year,
-                        semester: time_info.semester
+                        semester: time_info.semester,
+                        student_no: time_info.student_no
                     };
                 });
 
@@ -335,6 +358,7 @@
             $yearInput.val('');
             $semesterInput.val('');
             $semesterInput.prop('disabled', true); // 重置时禁用学期输入框
+            $studentInput.val('');
         });
     });
 </script>
@@ -356,9 +380,12 @@
                         <th>学期</th>
                         <th>课程编号</th>
                         <th>课程名称</th>
+                        <th>课程类别</th>
+                        <th>学分</th>
                         <th>学生学号</th>
                         <th>学生姓名</th>
                         <th>成绩</th>
+                        <th>绩点</th>
                     </tr>
                     </thead>
                     <tbody></tbody>

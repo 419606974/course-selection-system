@@ -28,10 +28,12 @@ class Config(object):
     # SESSION_KEY_PREFIX='stu-'
 
     '''  数据库配置相关  '''
+    # HOST = '106.52.4.40'
     HOST = '127.0.0.1'
     PORT = '3306'
     # 如果导入sql文件则不需要修改数据库名字，否则需要提前创建好自定义的数据库
     DATABASE = 'course_selection_manage'
+    # USERNAME = 'admin'
     USERNAME = 'root'
     PASSWORD = 'ck87792017'
     SQLALCHEMY_DATABASE_URI = "mysql+pymysql://{username}:{password}@{host}:{port}/{db}?charset=utf8".format(

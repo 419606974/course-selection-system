@@ -31,24 +31,29 @@ def course_query():
             # else:
             #     course_infos = db.execute_sql(
             #         'SELECT course.*, teacher.name AS teacher_name, teacher.number AS teacher_number FROM course JOIN teacher ON course.teacher_id = teacher.id').fetchall()
+            # course_infos = db.execute_sql(
+            #          'SELECT course.*, teacher.name AS teacher_name, teacher.number AS teacher_number FROM course JOIN teacher ON course.teacher_id = teacher.id').fetchall()
             course_infos = db.execute_sql(
-                     'SELECT course.*, teacher.name AS teacher_name, teacher.number AS teacher_number FROM course JOIN teacher ON course.teacher_id = teacher.id').fetchall()
+                'SELECT * FROM course').fetchall()
             return render_template('course.html', course_infos=course_infos)
         elif request.args.get('query') is not None:
             course_infos = db.execute_sql(
                 'SELECT * from course where number like %s or name like %s',
                 ('%' + request.args.get('query') + '%', '%' + request.args.get('query') + '%')).fetchall()
-            for course_info in course_infos:
-                cmd1 = """SELECT * from teacher WHERE id=%s"""
-                params1 = (course_info['teacher_id'])
-                result = db.execute_sql(cmd1, params1)
-                row = result.fetchone()
-                teacher_name = row['name']
-                course_info.update({'teacher_name': teacher_name})
+            # for course_info in course_infos:
+            #     cmd1 = """SELECT * from teacher WHERE id=%s"""
+            #     params1 = (course_info['teacher_id'])
+            #     result = db.execute_sql(cmd1, params1)
+            #     row = result.fetchone()
+            #     teacher_name = row['name']
+            #     course_info.update({'teacher_name': teacher_name})
             return jsonify({"rows": course_infos, "total": len(course_infos)})
         elif request.args.get('course_no') is not None:
+            # course_info = db.execute_sql(
+            #     'SELECT course.*, teacher.name AS teacher_name from course JOIN teacher ON course.teacher_id = teacher.id where course.number=%s',
+            #     (request.args.get('course_no'))).fetchone()
             course_info = db.execute_sql(
-                'SELECT course.*, teacher.name AS teacher_name from course JOIN teacher ON course.teacher_id = teacher.id where course.number=%s',
+                'SELECT * from course  where course.number=%s',
                 (request.args.get('course_no'))).fetchone()
             if course_info:
                 return jsonify({'success': True, 'course_info': course_info})
@@ -101,22 +106,22 @@ def course_query_by_student():
 def course_add():
     if session['role'] != 1:
         return jsonify({'success': False, 'message': '没有操作权限！'})
-    cmd1 = """SELECT * from teacher WHERE number=%s"""
-    params1 = (request.json['teachernum'])
-    result = db.execute_sql(cmd1, params1)
-    row = result.fetchone()
-    if not row:
-        return jsonify({'success': False, 'message': "不存在该教师编号!"})
-    teacher_name = row['name']
-    cmd2 = """INSERT INTO course(number, name, credits, year, semester, startdate, enddate, teaching_time, 
-	teaching_place, teacher_id) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"""
+    # cmd1 = """SELECT * from teacher WHERE number=%s"""
+    # params1 = (request.json['teachernum'])
+    # result = db.execute_sql(cmd1, params1)
+    # row = result.fetchone()
+    # if not row:
+    #     return jsonify({'success': False, 'message': "不存在该教师编号!"})
+    # teacher_name = row['name']
+    cmd2 = """INSERT INTO course(number, name, credits, year, semester, category, startdate, enddate, teaching_time, 
+	teaching_place, teacher_name) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"""
     params2 = (request.json['number'], request.json['name'], request.json['credits'], request.json['year'],
-               request.json['semester'], request.json['startdate'], request.json['enddate'],
-               request.json['teachingTime'], request.json['teachingPlace'], row['id'])
+               request.json['semester'], request.json['category'], request.json['startdate'], request.json['enddate'],
+               request.json['teachingTime'], request.json['teachingPlace'], request.json['teacher_name'])
     result = db.execute_sql(cmd2, params2)
     if result:
         insert_audit_log(request.remote_addr, current_user.id, model_name, '新增课程: ' + request.json['name'])
-        return jsonify({'success': True, 'message': "添加成功!", 'teacher_name': teacher_name})
+        return jsonify({'success': True, 'message': "添加成功!"})
     else:
         return jsonify({'success': False, 'message': "添加失败!"})
 
@@ -138,6 +143,8 @@ def course_update():
         update_dict.update({'year': request.get_json()["year"]})
     if request.get_json()["semester"] != '':
         update_dict.update({'semester': request.get_json()["semester"]})
+    if request.get_json()["category"] != '':
+        update_dict.update({'category': request.get_json()["category"]})
     if request.get_json()["startdate"] != '':
         update_dict.update({'startdate': request.get_json()["startdate"]})
     if request.get_json()["enddate"] != '':
@@ -146,16 +153,18 @@ def course_update():
         update_dict.update({'teaching_time': request.get_json()["updateTime"]})
     if request.get_json()["updatePlace"] != '':
         update_dict.update({'teaching_place': request.get_json()["updatePlace"]})
-    teacher_name = ''
-    if request.get_json()["teachernum"] != '':
-        cmd1 = """SELECT * from teacher WHERE number=%s"""
-        params1 = (request.get_json()["teachernum"])
-        result = db.execute_sql(cmd1, params1)
-        row = result.fetchone()
-        if not row:
-            return jsonify({'success': False, 'message': "不存在该教师编号!"})
-        update_dict.update({'teacher_id': row['id']})
-        teacher_name = row['name']
+    if request.get_json()["teacher_name"] != '':
+        update_dict.update({'teacher_name': request.get_json()["teacher_name"]})
+    # teacher_name = ''
+    # if request.get_json()["teachernum"] != '':
+    #     cmd1 = """SELECT * from teacher WHERE number=%s"""
+    #     params1 = (request.get_json()["teachernum"])
+    #     result = db.execute_sql(cmd1, params1)
+    #     row = result.fetchone()
+    #     if not row:
+    #         return jsonify({'success': False, 'message': "不存在该教师编号!"})
+    #     update_dict.update({'teacher_id': row['id']})
+    #     teacher_name = row['name']
     # 构建SQL更新语句
     set_clause = ', '.join(f"{key} = %s" for key in update_dict.keys())
     cmd = f"UPDATE course SET {set_clause} WHERE name = %s"
@@ -165,8 +174,6 @@ def course_update():
     if result:
         insert_audit_log(request.remote_addr, current_user.id, model_name, '更新课程: ' + request.json['name'])
         data = jsonify({'success': True, 'message': "更新成功!"})
-        if teacher_name:
-            data = jsonify({'success': True, 'message': "更新成功!", 'teacher_name': teacher_name})
         return data
     else:
         return jsonify({'success': False, 'message': "更新失败!"})
@@ -213,7 +220,7 @@ def achievement_query():
         # 管理员角色查询
         if session['role'] == 1 or session['role'] == 2:
             achievement_infos = db.execute_sql(
-                'SELECT achievement.*, course.name AS course_name, course.number AS course_no, course.year AS course_year, course.semester AS course_semester, user.name AS student_name, user.username AS student_no, gradelevel.name AS gradelevel_name FROM achievement JOIN course ON achievement.course_id = course.id JOIN user ON achievement.student_id = user.id JOIN gradelevel ON achievement.gradelevel_id = gradelevel.id ORDER BY achievement.id').fetchall()
+                'SELECT achievement.*, course.name AS course_name, course.number AS course_no, course.year AS course_year, course.semester AS course_semester, course.category AS course_cate, course.teacher_name AS teacher_name, user.name AS student_name, user.username AS student_no, gradelevel.name AS gradelevel_name, gradelevel.gpa AS gpa FROM achievement JOIN course ON achievement.course_id = course.id JOIN user ON achievement.student_id = user.id JOIN gradelevel ON achievement.gradelevel_id = gradelevel.id ORDER BY achievement.id').fetchall()
         return render_template('achievement.html', achievement_infos=achievement_infos)
     else:
         if 'all' not in request.args.get('query'):
@@ -457,25 +464,26 @@ def import_courses():
         credits = row['学分'] if pd.notna(row['学分']) else ''
         year = row['年度'] if pd.notna(row['年度']) else ''
         semester = row['学期'] if pd.notna(row['学期']) else ''
+        category = row['课程类别'] if pd.notna(row['课程类别']) else ''
         startdate = row['开课时间'] if pd.notna(row['开课时间']) else 'NULL'
         enddate = row['结课时间'] if pd.notna(row['结课时间']) else 'NULL'
         teaching_time = row['授课时间'] if pd.notna(row['授课时间']) else ''
         teaching_place = row['授课地点'] if pd.notna(row['授课地点']) else ''
 
-        teacher_number = row['授课老师编号'] if pd.notna(row['授课老师编号']) else ''
-        teacher_cmd = """SELECT * from teacher WHERE number=%s"""
-        teacher_params = (teacher_number)
-        teacher_row = db.execute_sql(teacher_cmd, teacher_params).fetchone()
-        teacher_id = teacher_row.get('id')
-        if not teacher_id:
-            return jsonify({'success': False, 'message': "添加失败，不存在该教师：%s" % teacher_number})
-
-        values.append("('{}', '{}', {}, '{}', '{}', '{}', '{}', '{}', '{}', {})".format(
-            number, name, credits, year, semester, startdate,
-            enddate, teaching_time, teaching_place, teacher_id))
+        # teacher_number = row['授课老师编号'] if pd.notna(row['授课老师编号']) else ''
+        # teacher_cmd = """SELECT * from teacher WHERE number=%s"""
+        # teacher_params = (teacher_number)
+        # teacher_row = db.execute_sql(teacher_cmd, teacher_params).fetchone()
+        # teacher_id = teacher_row.get('id')
+        # if not teacher_id:
+        #     return jsonify({'success': False, 'message': "添加失败，不存在该教师：%s" % teacher_number})
+        teacher_name = row['授课老师姓名'] if pd.notna(row['授课老师姓名']) else ''
+        values.append("('{}', '{}', {}, '{}', '{}', '{}', '{}', '{}', '{}', '{}', '{}')".format(
+            number, name, credits, year, semester, category, startdate,
+            enddate, teaching_time, teaching_place, teacher_name))
     # 拼接成 SQL 语句
-    cmd = """INSERT INTO course (number, name, credits, year, semester, startdate,
-			enddate, teaching_time, teaching_place, teacher_id) VALUES {};""".format(', '.join(values))
+    cmd = """INSERT INTO course (number, name, credits, year, semester, category, startdate,
+			enddate, teaching_time, teaching_place, teacher_name) VALUES {};""".format(', '.join(values))
     result = db.execute_sql(cmd)
     if result:
         insert_audit_log(request.remote_addr, current_user.id, "课程管理", '批量新增课程')
@@ -616,33 +624,53 @@ def gradelevel_delete():
 @course_bp.route('/average', methods=['GET'])
 @login_required
 def average_query():
-    if "year" not in request.args and "semester" not in request.args:
+    year = request.args.get('year')
+    semester = request.args.get('semester')
+    student_no = request.args.get('student_no')
+    # 不允许 semester 单独使用
+    if semester and not year:
+        return jsonify({"rows": [], "total": 0, "message": "学期不能单独查询，必须选择学年"})
+
+    where_clauses = []
+
+    if year:
+        where_clauses.append(f"c.year = '{year}'")
+    if semester:
+        where_clauses.append(f"c.semester = '{semester}'")
+    if student_no:
+        where_clauses.append(f"u.username = '{student_no}'")
+
+    if not where_clauses:
+        # 没有任何查询条件就返回空
         return render_template("average.html", average_infos=[])
-    else:
-        year = request.args.get('year')
-        semester = request.args.get('semester')
-        if semester:
-            where_sql = """c.year='{}' AND c.semester='{}'""".format(year, semester)
-        else:
-            where_sql = """c.year='{}'""".format(year)
-        average_sql = """SELECT
-                            u.username,
-                            u.name,
-                            ROUND(AVG(a.score), 2) AS average_score
-                        FROM
-                            course c
-                                JOIN
-                            achievement a ON c.id = a.course_id
-                                JOIN
-                            user u ON a.student_id = u.id
-                        WHERE
-                            {} 
-                        GROUP BY
-                            u.username, u.name
-                        ORDER BY
-                            average_score DESC;""".format(where_sql)
-        average_infos = db.execute_sql(average_sql).fetchall()
-        return jsonify({"rows": average_infos, "total": len(average_infos)})
+
+    where_sql = " AND ".join(where_clauses)
+
+    average_sql = f"""
+        SELECT
+            u.username,
+            u.name,
+            ROUND(AVG(a.score), 2) AS average_score,
+            SUM(c.credits) AS total_credits,
+            ROUND(SUM(gl.gpa * c.credits) / SUM(c.credits), 2) AS average_gpa
+        FROM
+            course c
+        JOIN
+            achievement a ON c.id = a.course_id
+        JOIN
+            user u ON a.student_id = u.id
+        JOIN
+            gradelevel gl ON a.score BETWEEN gl.min_score AND gl.max_score
+        WHERE
+            {where_sql}
+        GROUP BY
+            u.username, u.name
+        ORDER BY
+            average_score DESC;
+    """
+
+    average_infos = db.execute_sql(average_sql).fetchall()
+    return jsonify({"rows": average_infos, "total": len(average_infos)})
 
 
 @course_bp.route('/achievement_search', methods=['GET'])
@@ -651,25 +679,45 @@ def student_score_query():
     year = request.args.get('year')
     semester = request.args.get('semester')
     student_no = request.args.get('student_no')
+
+    if semester and not year:
+        return jsonify({"rows": [], "total": 0, "message": "学期不能单独查询，必须选择学年"})
+
+    # 至少需要 year 或 student_no 其中一个
+    if not year and not student_no:
+        return jsonify({"rows": [], "total": 0, "message": "请至少提供 年度 或 学生学号"})
+
+    where_clauses = []
+    if year:
+        where_clauses.append(f"c.year = '{year}'")
     if semester:
-        where_sql = """c.year='{}' AND c.semester='{}' AND u.username='{}'""".format(year, semester, student_no)
-    else:
-        where_sql = """c.year='{}' AND u.username='{}'""".format(year, student_no)
-    score_sql = """SELECT 
-                        c.year AS course_year,
-                        c.semester AS course_semester,
-                        c.number AS course_number,
-                        c.name AS course_name,
-                        u.username AS user_username,
-                        u.name AS user_name,
-                        a.score AS achievement_score
-                    FROM 
-                        course c
-                    JOIN 
-                        achievement a ON c.id = a.course_id
-                    JOIN 
-                        user u ON a.student_id = u.id
-                    WHERE {}""".format(where_sql)
+        where_clauses.append(f"c.semester = '{semester}'")
+    if student_no:
+        where_clauses.append(f"u.username = '{student_no}'")
+
+    where_sql = " AND ".join(where_clauses)
+    score_sql = f"""
+    SELECT 
+        c.year AS course_year,
+        c.semester AS course_semester,
+        c.number AS course_number,
+        c.name AS course_name,
+        c.category AS course_cate,
+        c.credits AS course_credits,
+        u.username AS user_username,
+        u.name AS user_name,
+        a.score AS achievement_score,
+        gl.gpa AS gradelevel_gpa
+    FROM 
+        course c
+    JOIN 
+        achievement a ON c.id = a.course_id
+    JOIN 
+        user u ON a.student_id = u.id
+    JOIN
+        gradelevel gl ON a.score BETWEEN gl.min_score AND gl.max_score
+    WHERE {where_sql}
+    """
     score_infos = db.execute_sql(score_sql).fetchall()
     return jsonify({"rows": score_infos, "total": len(score_infos)})
 

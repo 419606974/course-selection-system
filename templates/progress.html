@@ -197,17 +197,19 @@
                 title: '年度进步平均分',
                 align: 'center',
                 sortable: true
-            }, {
-                field: 'operate',
-                title: '操作',
-                align: 'center',
-                formatter: btnHandle,  // 自定义方法
-                events: {
-                    'click .info-btn': function (event, value, row, index) {
-                        infoRole(row);
-                    },
-                }
-            }],
+            },
+            //     {
+            //     field: 'operate',
+            //     title: '操作',
+            //     align: 'center',
+            //     formatter: btnHandle,  // 自定义方法
+            //     events: {
+            //         'click .info-btn': function (event, value, row, index) {
+            //             infoRole(row);
+            //         },
+            //     }
+            // }
+            ],
         })
         $('#tb_departments').bootstrapTable('hideLoading'); // 手动关闭加载提示
 

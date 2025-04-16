@@ -1,0 +1,4 @@
+[2025-04-15 15:04:34] | DEBUG | app.py:print_request_info:50 | 接口请求地址:http://127.0.0.1:8888/dashboard
+[2025-04-15 15:04:34] | DEBUG | app.py:print_request_info:57 | 接口请求数据:
+[2025-04-15 15:04:39] | DEBUG | app.py:print_request_info:50 | 接口请求地址:http://127.0.0.1:8888/dashboard
+[2025-04-15 15:04:39] | DEBUG | app.py:print_request_info:57 | 接口请求数据:

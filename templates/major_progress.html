@@ -1,10 +1,233 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh">
 <head>
   <meta charset="UTF-8">
-  <title>$Title$</title>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
+  <title>进度提醒</title>
+  <link rel="shortcut icon" type="image/x-icon" href="static/favicon.ico">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-touch-fullscreen" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <link rel="stylesheet" href="static/css/materialdesignicons.min.css">
+  <link rel="stylesheet" href="static/css/bootstrap.min.css">
+  <link rel="stylesheet" href="static/js/bootstrap-multitabs/multitabs.min.css">
+  <link rel="stylesheet" href="static/css/animate.min.css">
+  <link rel="stylesheet" href="static/css/style.min.css">
+  <link rel="stylesheet" href="static/js/bootstrap-datetimepicker/bootstrap-datetimepicker.css">
+  <style>
+    .lyear-search {
+      position: relative;
+      display: inline-flex;
+      z-index: 0;
+    }
+    .lyear-search input {
+      width: 300px;
+      padding-left: 35px;
+      transition: .5s;
+    }
+    #btn_delete {
+      margin-left: 10px;
+    }
+    form.lyear-search .form-control {
+      width: 200px;
+      padding: 4px 8px;
+      font-size: 0.9em;
+    }
+    #status-select {
+      width: 180px;
+    }
+  </style>
 </head>
+
 <body>
-$END$
+
+<div class="container-fluid p-t-15">
+  <div class="row">
+    <div class="col-lg-12">
+      <div class="card">
+        <div class="card-body">
+          <div id="toolbar" class="toolbar-btn-action">
+            <div class="row">
+              <div class="col-md-12 text-right search-group">
+                <div class="form-group">
+                  <form class="lyear-search lyear-search-left lyear-search-rounder">
+                    <div class="input-group">
+                      <div class="input-group-prepend input-group-append">
+                        <span class="input-group-text">修读进度</span>
+                      </div>
+                      <select id="status-select" class="form-control">
+                        <option value="">全部</option>
+                        <option value="1">七年内未完成所有学科</option>
+                      </select>
+                      <div class="input-group-btn" style="margin-left: 20px;">
+                        <button id="search_btn" type="button" class="btn btn-success mr-2">
+                          <i class="mdi mdi-magnify"></i> 搜索
+                        </button>
+                        <a class="btn btn-default reset_btn"><i class="mdi mdi-restore"></i> 重置</a>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <table id="tb_departments">
+            <thead class="thead-dark">
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="static/js/jquery.min.js"></script>
+<script src="static/js/popper.min.js"></script>
+<script src="static/js/bootstrap.min.js"></script>
+<script src="static/js/perfect-scrollbar.min.js"></script>
+<script src="static/js/jquery.cookie.min.js"></script>
+<script src="static/js/bootstrap-notify.min.js"></script>
+<script src="static/js/bootstrap-multitabs/multitabs.min.js"></script>
+<script src="static/js/index.min.js"></script>
+<script src="static/js/main.min.js"></script>
+<script src="static/js/Chart.min.js"></script>
+<script src="static/js/bootstrap-maxlength/bootstrap-maxlength.min.js"></script>
+<script src="static/js/jquery-tagsinput/jquery.tagsinput.min.js"></script>
+<script src="static/js/jquery-confirm/jquery-confirm.min.js"></script>
+<script src="static/js/bootstrap-table/bootstrap-table.min.js"></script>
+<script src="static/js/bootstrap-table/extensions/export/bootstrap-table-export.min.js"></script>
+<script src="static/js/tableExport.min.js"></script>
+<script src="static/js/bootstrap-table/locale/bootstrap-table-zh-CN.min.js"></script>
+<script src="static/js/jquery-treegrid/jquery.treegrid.min.js"></script>
+<script src="static/js/moment.js/moment.min.js"></script>
+<script src="static/js/moment.js/locale/zh-cn.min.js"></script>
+<script src="static/js/bootstrap-datetimepicker/bootstrap-datetimepicker.min.js"></script>
+<script src="static/js/bootstrap-table/extensions/treegrid/bootstrap-table-treegrid.min.js"></script>
+<script src="static/js/myutils.js"></script>
+
+<script>
+  $(document).ready(function () {
+    accessControl();
+    // 在页面加载完成后，从模板上下文中获取 audit_infos 变量
+    var StudentCourseInfos = {{ student_course_infos | tojson | default('[]') }};
+    // 向后端获取数据填充table
+    $('#tb_departments').bootstrapTable({
+      data: StudentCourseInfos,
+      classes: 'table table-bordered table-hover table-striped',
+      dataType: 'jsonp',            // 因为本示例中是跨域的调用,所以涉及到ajax都采用jsonp,
+      uniqueId: 'id',
+      idField: 'id',              // 每行的唯一标识字段
+      toolbar: '#toolbar',        // 工具按钮容器
+      clickToSelect: false,       // 是否启用点击选中行
+      striped: true,              // 是否显示行间隔色
+      showColumns: true,         // 是否显示所有的列
+      showRefresh: false,         // 是否显示刷新按钮,这个按钮这一般是在客户端分页的情况下使用
+      showToggle: false,          // 是否显示详细视图和列表视图的切换按钮(clickToSelect同时设置为true时点击会报错)
+      cache: false,               // 不缓存数据
+      pagination: true,                    // 是否显示分页
+      sortOrder: "asc",                    // 排序方式
+      // 传递参数
+      queryParams: function (params) {
+        var temp = {
+          limit: params.limit,         // 每页数据量
+          offset: params.offset,       // sql语句起始索引
+          page: (params.offset / params.limit) + 1,
+          sort: params.sort,           // 排序的列名
+          sortOrder: params.order      // 排序方式'asc' 'desc'
+        };
+        return temp;
+      },
+      sidePagination: "client",            // 分页方式：client客户端分页，server服务端分页
+      pageNumber: 1,                       // 初始化加载第一页，默认第一页
+      pageSize: 10,                        // 每页的记录行数
+      pageList: [10, 20, 50, 100],         // 可供选择的每页的行数
+      search: false,                      // 是否显示表格搜索，此搜索是客户端搜索
+      showExport: true,        // 是否显示导出按钮, 导出功能需要导出插件支持(tableexport.min.js)
+      exportDataType: "all", // 导出数据类型, 'basic':当前页, 'all':所有数据, 'selected':选中的数据
+      columns: [
+        // {
+        //     field: 'example',
+        //     checkbox: true    // 是否显示复选框
+        // },
+        //     {
+        //     field: 'id', //columns里的field的值必须和后端返回的字段名一样
+        //     title: 'ID', //columns里的title的值就是表格列名
+        //     sortable: true,    // 是否排序
+        //     align: 'center',
+        // },
+        {
+          field: 'student_no',
+          title: '学生学号',
+          align: 'center',
+        },{
+          field: 'student_name',
+          title: '学生姓名',
+          align: 'center',
+          formatter: function(value) {
+            return `<strong>${value || ''}</strong>`;
+          }
+        },{
+          field: 'enrollment_date',
+          title: '入学时间',
+          align: 'center',
+        },{
+          field: 'major',
+          title: '未完成的专业',
+          align: 'center',
+        },{
+          field: 'unfinished_courses',
+          title: '该专业下未完成的课程数',
+          align: 'center',
+        },],
+    })
+    $('#tb_departments').bootstrapTable('hideLoading'); // 手动关闭加载提示
+
+  });
+
+  $('#tb_departments').bootstrapTable('hideLoading');
+
+  // 搜索按钮
+  $('#search_btn').on('click', function () {
+    var type = $('#status-select').val();
+    if (!type) {
+      alert('请选择进度筛选条件');
+      return;
+    }
+
+    $.getJSON('/major_progress?type=' + encodeURIComponent(type), function (data) {
+      if (data.success) {
+        $('#tb_departments').bootstrapTable('load', data.rows);
+      } else {
+        alert(data.message || '查询失败');
+        $('#tb_departments').bootstrapTable('load', []);
+      }
+    }).fail(function () {
+      alert('请求失败');
+      $('#tb_departments').bootstrapTable('load', []);
+    });
+  });
+
+  // 重置按钮
+  $('.reset_btn').on('click', function () {
+    $('#status-select').val('');
+    $('#tb_departments').bootstrapTable('load', []);
+  });
+
+  $(document).ready(function () {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('auto_select') === '1') {
+      // 自动设置下拉框
+      $('#status-select').val('1');
+
+      // 模拟点击搜索
+      setTimeout(() => {
+        $('#search_btn').click();
+      }, 300);  // 等待页面元素加载稳定
+    }
+  });
+
+</script>
+
 </body>
 </html>

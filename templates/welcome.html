@@ -15,7 +15,7 @@
     }
 
     .welcome-container {
-        background-image: url('static/images/index-background.jpg');
+        background-image: url('static/images/index-background2.jpg');
         background-repeat: no-repeat;
         background-size: contain;
         background-position: center;
@@ -39,16 +39,100 @@
     .welcome-content p {
         font-size: 1.2em;
     }
+    .custom-notify {
+        background-color: #fff3cd !important;
+        color: #856404 !important;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        padding: 20px 24px 20px 20px;
+        font-size: 15px;
+        position: relative;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .custom-notify a {
+        color: #0c5460 !important;
+        font-weight: bold;
+        text-decoration: none;
+        margin-left: 1px;
+        white-space: nowrap;
+    }
+
+    .custom-notify .close {
+        position: absolute;
+        top: 4px;
+        right: 4px;
+        transform: none;
+        background-color: rgba(0, 0, 0, 0.1);
+        border: none;
+        border-radius: 50%;
+        width: 24px;
+        height: 24px;
+        line-height: 24px;
+        text-align: center;
+        color: #856404;
+        font-size: 16px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    .custom-notify .close:hover {
+        background-color: rgba(0, 0, 0, 0.2);
+        color: #000;
+    }
 </style>
 <body>
 <div class="welcome-container">
     <div class="welcome-content">
-        <h1>欢迎使用成绩管理系统</h1>
+<!--        <h1>欢迎使用成绩管理系统</h1>-->
 <!--        <p>使用过程中有任何疑问，欢迎联系管理员，联系方式：-->
 <!--        </p>-->
 <!--        <p>手机号： 18312286349</p>-->
 <!--        <p class="text-center text-muted mt-3">邮箱：<a href="mailto:xxx@qq.com">戳我</a></p>-->
     </div>
 </div>
+<script src="static/js/jquery.min.js"></script>
+<script src="static/js/bootstrap-notify.min.js"></script>
+<link rel="stylesheet" href="static/css/animate.min.css">
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        fetch('http://127.0.0.1:8888/major_progress?type=1')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success && data.rows && data.rows.length > 0) {
+                    $.notify({
+                        message: `⚠️ 有 <strong>4</strong> 位同学 7 年内未完成所有课程，请及时查看。
+              👉 <a href="/major_progress?auto_select=1">点击查看详情</a>`
+                    }, {
+                        type: 'warning',
+                        allow_dismiss: true,
+                        delay: 15000,
+                        placement: {
+                            from: 'top',
+                            align: 'right'
+                        },
+                        offset: {
+                            x: 10,
+                            y: 10
+                        },
+                        animate: {
+                            enter: 'animated fadeInDown',
+                            exit: 'animated fadeOutUp'
+                        },
+                        z_index: 1051,
+                        onShow: function () {
+                            $('.alert-warning').addClass('custom-notify');
+                        }
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('提醒接口请求失败:', error);
+            });
+    });
+</script>
 </body>
 </html>

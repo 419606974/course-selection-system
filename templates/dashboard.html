@@ -40,23 +40,26 @@
                                 <span>首页</span>
                             </a>
                         </li>
-                        <li permission-id="4" class="nav-item nav-item">
-                            <a href="/teacher" class="multitabs">
-                                <i class="mdi mdi-teach"></i>
-                                <span>教师管理</span>
-                            </a>
+                        <li class="nav-item nav-item-has-subnav">
+                            <a href="javascript:void(0)"><i class="mdi mdi-teach"></i><span>教师管理</span></a>
+                            <ul class="nav nav-subnav show">
+                                <li permission-id="4"><a class="multitabs" href="/teacher">教师列表</a></li>
+                            </ul>
                         </li>
-                        <li permission-id="4" class="nav-item nav-item">
-                            <a href="/user" class="multitabs">
-                                <i class="mdi mdi-nature-people"></i>
-                                <span>学生管理</span>
-                            </a>
+                        <li class="nav-item nav-item-has-subnav">
+                            <a href="javascript:void(0)"><i class="mdi mdi-nature-people"></i><span>学生管理</span></a>
+                            <ul class="nav nav-subnav show">
+                                <li permission-id="4"><a class="multitabs" href="/user">学生列表</a></li>
+                                <li permission-id="4"><a class="multitabs" href="/student_course">学生课程</a></li>
+                                <li permission-id="4"><a class="multitabs" href="/major_progress">进度提醒</a></li>
+                            </ul>
                         </li>
-                        <li permission-id="4" class="nav-item nav-item">
-                            <a href="/course" class="multitabs">
-                                <i class="mdi mdi-alarm"></i>
-                                <span>课程管理</span>
-                            </a>
+                        <li class="nav-item nav-item-has-subnav">
+                            <a href="javascript:void(0)"><i class="mdi mdi-alarm"></i><span>课程管理</span></a>
+                            <ul class="nav nav-subnav show">
+                                <li permission-id="4"><a class="multitabs" href="/major">专业列表</a></li>
+                                <li permission-id="4"><a class="multitabs" href="/course">课程列表</a></li>
+                            </ul>
                         </li>
                         <li class="nav-item nav-item-has-subnav">
                             <a href="javascript:void(0)"><i class="mdi mdi-silo"></i> <span>成绩管理</span></a>
@@ -355,7 +358,7 @@
     $(document).ready(function() {
         // 触发点击事件展开“成绩管理”菜单
         $('.nav-item-has-subnav > a').each(function() {
-            if ($(this).text().includes("成绩管理")) {
+            if ($(this).text().includes("学生管理")) {
                 $(this).trigger('click');
             }
         });

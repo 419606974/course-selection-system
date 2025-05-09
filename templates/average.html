@@ -130,6 +130,8 @@
 <script type="text/javascript" src="static/js/bootstrap-table/bootstrap-table.min.js"></script>
 <script type="text/javascript" src="static/js/bootstrap-table/extensions/export/bootstrap-table-export.min.js"></script>
 <script type="text/javascript" src="static/js/tableExport.min.js"></script>
+<script type="text/javascript" src="static/js/FileSaver.min.js"></script>
+<script type="text/javascript" src="static/js/xlsx.core.min.js"></script>
 <script type="text/javascript" src="static/js/bootstrap-table/locale/bootstrap-table-zh-CN.min.js"></script>
 <script type="text/javascript" src="static/js/jquery-treegrid/jquery.treegrid.min.js"></script>
 <script type="text/javascript" src="static/js/moment.js/moment.min.js"></script>
@@ -177,6 +179,10 @@
             search: false,                      // 是否显示表格搜索，此搜索是客户端搜索
             showExport: true,        // 是否显示导出按钮, 导出功能需要导出插件支持(tableexport.min.js)
             exportDataType: "all", // 导出数据类型, 'basic':当前页, 'all':所有数据, 'selected':选中的数据
+            exportOptions: {
+                fileName: '平均表',
+                ignoreColumn: ['operate'], // 忽略操作列导出
+            },
             columns: [
             // {
             //     field: 'example',
@@ -200,10 +206,16 @@
                 field: 'username',
                 title: '学生学号',
                 align: 'center',
+                formatter: function(value) {
+                    return `<strong>${value || ''}</strong>`;
+                }
             }, {
                 field: 'name',
                 title: '学生姓名',
                 align: 'center',
+                formatter: function(value) {
+                    return `<strong>${value || ''}</strong>`;
+                }
             },{
                 field: 'average_score',
                 title: '平均分',
@@ -262,8 +274,7 @@
             <tr>
                 <td>${item.course_year}</td>
                 <td>${item.course_semester}</td>
-                <td>${item.course_number}</td>
-                <td>${item.course_name}</td>
+                <td><strong>${item.course_name}</strong></td>
                 <td>${item.course_cate}</td>
                 <td>${item.course_credits}</td>
                 <td>${item.user_username}</td>
@@ -275,29 +286,6 @@
             $tableBody.append(row);
         });
     }
-
-    $(function () {
-        // 初始化表格
-        $('#tb_departments').bootstrapTable({
-            columns: [
-                {
-                    field: 'state',
-                    checkbox: true,
-                },
-                {
-                    field: 'id',
-                    title: 'ID',
-                },
-                {
-                    field: 'op_event',
-                    title: 'op_event',
-                },
-                // 其他列...
-            ],
-            // 其他配置...
-        });
-
-    });
 
     $(document).ready(function () {
         // 选择年度和学期输入框
@@ -344,7 +332,6 @@
                         ...row,
                         year: time_info.year,
                         semester: time_info.semester,
-                        student_no: time_info.student_no
                     };
                 });
 
@@ -360,7 +347,23 @@
             $semesterInput.prop('disabled', true); // 重置时禁用学期输入框
             $studentInput.val('');
         });
+
+        $('#achievementModal').on('hidden.bs.modal', function () {
+            $('#achievementTable tbody').empty();
+        });
     });
+
+    $(document).ready(function () {
+        $('#exportAchievementBtn').click(function () {
+            exportTableToExcel('achievementTable', '成绩详情');
+        });
+    });
+
+    function exportTableToExcel(tableId, filename = '导出数据') {
+        const wb = XLSX.utils.table_to_book(document.getElementById(tableId), { sheet: "Sheet1" });
+        const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+        saveAs(new Blob([wbout], { type: "application/octet-stream" }), filename + ".xlsx");
+    }
 </script>
 <!-- 模态窗口 -->
 <div class="modal fade" id="achievementModal" tabindex="-1" role="dialog" aria-labelledby="achievementModalLabel" aria-hidden="true">
@@ -378,8 +381,7 @@
                     <tr>
                         <th>年度</th>
                         <th>学期</th>
-                        <th>课程编号</th>
-                        <th>课程名称</th>
+                        <th><strong>课程名称</strong></th>
                         <th>课程类别</th>
                         <th>学分</th>
                         <th>学生学号</th>
@@ -392,6 +394,7 @@
                 </table>
             </div>
             <div class="modal-footer">
+                <button type="button" class="btn btn-success" id="exportAchievementBtn">下载</button>
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
             </div>
         </div>

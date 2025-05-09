@@ -84,33 +84,31 @@
                                                 <label for="add-number" class="col-form-label">分级编号</label>
                                                 <input type="text" class="form-control" id="add-number"
                                                        maxlength="64"
-                                                       placeholder="请输入分级编号">
+                                                       placeholder="请输入该分级的编号">
                                             </div>
                                             <div class="form-group">
                                                 <label for="add-name" class="col-form-label">分级名称</label>
                                                 <input type="text" class="form-control" id="add-name"
-                                                       maxlength="32"
-                                                       placeholder="请输入分级名称">
+                                                       maxlength="32">
                                             </div>
                                             <div class="form-group">
                                                 <label for="add-min" class="col-form-label">最小成绩</label>
                                                 <input type="text" class="form-control" id="add-min"
                                                        maxlength="32"
-                                                       placeholder="请输入最小成绩">
+                                                       placeholder="请输入最小成绩，例如 60">
                                             </div>
                                             <div id="error_message1" style="color: red"></div>
                                             <div class="form-group">
                                                 <label for="add-max" class="col-form-label">最大成绩</label>
                                                 <input type="text" class="form-control" id="add-max"
                                                        maxlength="32"
-                                                       placeholder="请输入最大成绩">
+                                                       placeholder="请输入最大成绩，例如 79.99">
                                             </div>
                                             <div id="error_message2" style="color: red"></div>
                                             <div class="form-group">
                                                 <label for="add-gpa" class="col-form-label">绩点</label>
                                                 <input type="text" class="form-control" id="add-gpa"
-                                                       maxlength="32"
-                                                       placeholder="请输入绩点">
+                                                       maxlength="32">
                                             </div>
                                             <div id="error_message3" style="color: red"></div>
                                         </form>
@@ -249,6 +247,10 @@
             search: true,                      // 是否显示表格搜索，此搜索是客户端搜索
             showExport: true,        // 是否显示导出按钮, 导出功能需要导出插件支持(tableexport.min.js)
             exportDataType: "all", // 导出数据类型, 'basic':当前页, 'all':所有数据, 'selected':选中的数据
+            exportOptions: {
+                fileName: '成绩分级表',
+                ignoreColumn: ['operate'], // 忽略操作列导出
+            },
             columns: [{
                 field: 'example',
                 checkbox: true    // 是否显示复选框
@@ -266,7 +268,10 @@
                 field: 'name',
                 title: '分级名称',
                 align: 'center',
-                searchable: true
+                searchable: true,
+                formatter: function(value) {
+                    return `<strong>${value || ''}</strong>`;
+                }
             }, {
                 field: 'min_score',
                 title: '最小成绩',

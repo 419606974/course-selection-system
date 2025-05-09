@@ -154,6 +154,9 @@
             search: false,                      // 是否显示表格搜索，此搜索是客户端搜索
             showExport: true,        // 是否显示导出按钮, 导出功能需要导出插件支持(tableexport.min.js)
             exportDataType: "all", // 导出数据类型, 'basic':当前页, 'all':所有数据, 'selected':选中的数据
+            exportOptions: {
+                fileName: '年度进步表',
+            },
             columns: [
             // {
             //     field: 'example',
@@ -173,10 +176,16 @@
                 field: 'username',
                 title: '学生学号',
                 align: 'center',
+                formatter: function(value) {
+                    return `<strong>${value || ''}</strong>`;
+                }
             }, {
                 field: 'name',
                 title: '学生姓名',
                 align: 'center',
+                formatter: function(value) {
+                    return `<strong>${value || ''}</strong>`;
+                }
             }, {
                 field: 'semester_3_score',
                 title: '第3学期平均分',

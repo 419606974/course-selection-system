@@ -1,0 +1,4 @@
+[2025-04-25 11:34:12] | DEBUG | app.py:print_request_info:52 | 接口请求地址:http://127.0.0.1:8888/major/delete
+[2025-04-25 11:34:12] | DEBUG | app.py:print_request_info:59 | 接口请求数据:{"id":6}
+[2025-04-25 11:34:19] | DEBUG | app.py:print_request_info:52 | 接口请求地址:http://127.0.0.1:8888/major/delete
+[2025-04-25 11:34:19] | DEBUG | app.py:print_request_info:59 | 接口请求数据:{"id":5}

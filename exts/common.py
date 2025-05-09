@@ -51,3 +51,13 @@ def insert_audit_log(ip, user, module, event):
                             (ip, user, module, event))
     if result is None:
         logger.error("commit audit info fail")
+
+
+def get_major_ids_by_names(names, connection):
+    """根据专业名称列表查询对应的 id 列表"""
+    cursor = connection.cursor()
+    format_strings = ','.join(['%s'] * len(names))
+    query = f"SELECT id FROM major WHERE name IN ({format_strings})"
+    cursor.execute(query, names)
+    results = cursor.fetchall()
+    return [row[0] for row in results]

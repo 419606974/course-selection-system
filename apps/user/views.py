@@ -125,25 +125,68 @@ def reset_user_password():
 @user_bp.route('/user', methods=['GET'])
 @login_required
 def user_list():
-    if request.args.get('query') is None and request.args.get('student_no') is None:
-        user_infos = db.execute_sql('SELECT * from user').fetchall()
-        [i.update({'register_time': i['register_time'].strftime('%Y-%m-%d %H:%M:%S')}) for i in user_infos]
-        [i.update({'last_login_time': i['last_login_time'].strftime('%Y-%m-%d %H:%M:%S')}) if i[
-            'last_login_time'] else ''
-         for i in user_infos]
+    query = request.args.get('query')
+    student_no = request.args.get('student_no')
+    major_name = request.args.get('major_name')
+
+    # 1. 如果是根据专业名查学生
+    if major_name:
+        sql = """
+            SELECT
+                u.username, u.name, u.enrollment_date, u.student_type, u.fellowship
+            FROM
+                user u
+            JOIN student_major sm ON u.id = sm.student_id
+            JOIN major m ON sm.major_id = m.id
+            WHERE m.name = %s
+        """
+        user_infos = db.execute_sql(sql, (major_name,)).fetchall()
+        return jsonify({"success": True, "users": user_infos})
+
+    # 2. 无条件，加载所有学生
+    if not query and not student_no:
+        sql = """
+            SELECT
+                u.id, u.username, u.name, u.sex, u.hometown, u.enrollment_date,
+                u.student_type, u.fellowship, u.phone, u.email, u.description,
+                GROUP_CONCAT(m.name SEPARATOR ', ') AS major
+            FROM
+                user u
+            LEFT JOIN student_major sm ON u.id = sm.student_id
+            LEFT JOIN major m ON sm.major_id = m.id
+            WHERE u.role_id = 3
+            GROUP BY u.id
+            ORDER BY u.id
+        """
+        user_infos = db.execute_sql(sql).fetchall()
+        # [i.update({'register_time': i['register_time'].strftime('%Y-%m-%d %H:%M:%S')}) for i in user_infos]
+        # [i.update({'last_login_time': i['last_login_time'].strftime('%Y-%m-%d %H:%M:%S')}) if i[
+        #     'last_login_time'] else ''
+        #  for i in user_infos]
         return render_template("user.html", user_infos=user_infos)
-    elif request.args.get('query') is not None:
+
+    # 3. 按关键词模糊搜索
+    if query:
+        sql = """
+            SELECT * FROM user
+            WHERE username LIKE %s OR email LIKE %s OR name LIKE %s OR phone LIKE %s
+        """
         user_infos = db.execute_sql(
-            'SELECT * from user where username like %s or email like %s or name like %s or phone like %s',
-            ('%' + request.args.get('query') + '%', '%' + request.args.get('query') + '%',
-             '%' + request.args.get('query') + '%', '%' + request.args.get('query') + '%')).fetchall()
-        [i.update({'register_time': i['register_time'].strftime('%Y-%m-%d %H:%M:%S')}) for i in user_infos]
-        [i.update({'last_login_time': i['last_login_time'].strftime('%Y-%m-%d %H:%M:%S')}) if i[
-            'last_login_time'] else '' for i in user_infos]
+            sql,
+            ('%' + query + '%',) * 4
+        ).fetchall()
+        for i in user_infos:
+            if i.get('register_time'):
+                i['register_time'] = i['register_time'].strftime('%Y-%m-%d %H:%M:%S')
+            if i.get('last_login_time'):
+                i['last_login_time'] = i['last_login_time'].strftime('%Y-%m-%d %H:%M:%S')
         return jsonify({"rows": user_infos, "total": len(user_infos)})
-    elif request.args.get('student_no') is not None:
+
+    # 4. 根据学号查询
+    if student_no:
         student_info = db.execute_sql(
-            'SELECT * from user where username=%s', (request.args.get('student_no'))).fetchone()
+            'SELECT * FROM user WHERE username=%s', (student_no,)
+        ).fetchone()
         if student_info:
             return jsonify({'success': True, 'student_info': student_info})
         else:
@@ -165,19 +208,28 @@ def user_add():
         params = (
         request.json['username'], request.json['password'], request.json['email'], request.json['description'])
     elif role == 3:
+        cursor = db.execute_sql("SELECT id FROM user WHERE username = %s", (request.json['username'],))
+        if cursor.fetchone():
+            return jsonify({"success": False, "message": "学号已存在"})
         cmd = """INSERT INTO user(username,password,name,email,role_id,status,description,sex,hometown,
-		enrollment_date,student_type,major,fellowship,phone) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"""
+		enrollment_date,student_type,fellowship,phone) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"""
         params = (request.json['username'], request.json['password'], request.json['name'],
                   request.json['email'], role,
                   request.json['status'], request.json['description'], request.json['sex'],
                   request.json['hometown'],
                   request.json['enrollment_date'],
                   request.json['student_type'],
-                  request.json['major'],
                   request.json['fellowship'],
                   request.json['phone'])
     result = db.execute_sql(cmd, params)
     if result:
+        cursor = db.execute_sql("SELECT id FROM user WHERE username = %s", (request.json['username'],))
+        user_id = cursor.fetchone()["id"]
+        majors = request.get_json().get("major", [])
+        if majors:
+            cursor = db.execute_sql("SELECT id FROM major WHERE name IN %s", ((tuple(majors),)))
+            for row in cursor.fetchall():
+                db.execute_sql("INSERT INTO student_major (student_id, major_id) VALUES (%s, %s)", (user_id, row['id']))
         insert_audit_log(request.remote_addr, current_user.id, "用户管理", '新增账号: ' + request.get_json()['username'])
         return jsonify({'success': True, 'message': "添加成功!"})
     else:
@@ -189,47 +241,65 @@ def user_add():
 def user_update():
     if session['role'] != 1:
         return jsonify({'success': False, 'message': '没有操作权限！'})
+
     update_dict = {}
     data = request.get_json()
-    # 根据request.get_json()中的数据构建一个动态的SQL更新语句
-    if data.get("name") != '':
-        update_dict.update({'name': data["name"]})
-    if data.get("password") != '':
-        update_dict.update({'password': data["password"]})
-    if data.get("email") != '':
-        update_dict.update({'email': data["email"]})
-    if data.get("role") != '':
-        update_dict.update({'role_id': data["role"]})
-    if data.get("status") != '':
-        update_dict.update({'status': data["status"]})
-    if data.get("description") != '':
-        update_dict.update({'description': data["description"]})
-    if data.get("sex") != '':
-        update_dict.update({'sex': data["sex"]})
-    if data.get("hometown") != '':
-        update_dict.update({'hometown': data["hometown"]})
-    if data.get("enrollment_date") != '':
-        update_dict.update({'enrollment_date': data["enrollment_date"]})
-    if data.get("student_type") != '':
-        update_dict.update({'student_type': data["student_type"]})
-    if data.get("major") != '':
-        update_dict.update({'major': data["major"]})
-    if data.get("fellowship") != '':
-        update_dict.update({'fellowship': data["fellowship"]})
-    if data.get("phone") != '':
-        update_dict.update({'phone': data["phone"]})
-    # 构建SQL更新语句
-    set_clause = ', '.join(f"{key} = %s" for key in update_dict.keys())
-    cmd = f"UPDATE user SET {set_clause} WHERE username = %s"
+    username = data.get("username")
+    majors = data.get("major", [])
 
-    # 准备参数列表
-    params = list(update_dict.values()) + [request.get_json()["username"]]
-    result = db.execute_sql(cmd, params)
-    if result:
-        insert_audit_log(request.remote_addr, current_user.id, "用户管理", '更新用户信息: ' + request.get_json()['username'])
+    cursor = db.execute_sql("SELECT id FROM user WHERE username = %s", (username,))
+    user = cursor.fetchone()
+    if not user:
+        return jsonify({"success": False, "message": "用户不存在"})
+    user_id = user["id"]
+
+    # 动态生成待更新字段字典
+    if data.get("name") != '': update_dict['name'] = data["name"]
+    if data.get("password") != '': update_dict['password'] = data["password"]
+    if data.get("email") != '': update_dict['email'] = data["email"]
+    if data.get("role") != '': update_dict['role_id'] = data["role"]
+    if data.get("status") != '': update_dict['status'] = data["status"]
+    if data.get("description") != '': update_dict['description'] = data["description"]
+    if data.get("sex") != '': update_dict['sex'] = data["sex"]
+    if data.get("hometown") != '': update_dict['hometown'] = data["hometown"]
+    if data.get("enrollment_date") != '': update_dict['enrollment_date'] = data["enrollment_date"]
+    if data.get("student_type") != '': update_dict['student_type'] = data["student_type"]
+    if data.get("fellowship") != '': update_dict['fellowship'] = data["fellowship"]
+    if data.get("phone") != '': update_dict['phone'] = data["phone"]
+
+    # 获取当前数据库中该学生已关联的 major_id 集合
+    cursor = db.execute_sql("SELECT major_id FROM student_major WHERE student_id = %s", (user_id,))
+    existing_major_ids = {row["major_id"] for row in cursor.fetchall()}
+
+    # 获取前端提交的 major_id 集合
+    cursor = db.execute_sql("SELECT id FROM major WHERE name IN %s", ((tuple(majors),)))
+    new_major_ids = {row["id"] for row in cursor.fetchall()}
+
+    # 计算差集
+    to_add = new_major_ids - existing_major_ids
+    to_delete = existing_major_ids - new_major_ids
+
+    updated = False
+
+    if update_dict:
+        set_clause = ', '.join(f"{key} = %s" for key in update_dict.keys())
+        cmd = f"UPDATE user SET {set_clause} WHERE username = %s"
+        params = list(update_dict.values()) + [username]
+        result = db.execute_sql(cmd, params)
+        updated = True if result else False
+
+    if to_add or to_delete:
+        for mid in to_delete:
+            db.execute_sql("DELETE FROM student_major WHERE student_id = %s AND major_id = %s", (user_id, mid))
+        for mid in to_add:
+            db.execute_sql("INSERT INTO student_major (student_id, major_id) VALUES (%s, %s)", (user_id, mid))
+        updated = True
+
+    if updated:
+        insert_audit_log(request.remote_addr, current_user.id, "用户管理", '更新用户信息: ' + username)
         return jsonify({'success': True, 'message': "更新成功!"})
     else:
-        return jsonify({'success': False, 'message': "更新失败!"})
+        return jsonify({'success': True, 'message': "数据无变动，无需更新。"})
 
 
 @user_bp.route('/user/delete', methods=['POST'])
@@ -237,32 +307,52 @@ def user_update():
 def user_delete():
     if session['role'] != 1:
         return jsonify({'success': False, 'message': '没有操作权限！'})
-    if 'id' in request.json:
-        achievement_cmd = """SELECT * from achievement WHERE student_id=%s"""
-        achievement_params = (request.json['id'])
-        achievement_row = db.execute_sql(achievement_cmd, achievement_params).fetchone()
-        if achievement_row:
-            return jsonify({'success': False, 'message': "存在该学生对应的成绩，请更改后再删除"})
-        cmd = "DELETE FROM user WHERE id=%s;"
-        result = db.execute_sql(cmd, request.json['id'])
-        ids_to_delete = request.json['id']
-    elif 'ids' in request.json:
-        ids_to_delete = request.json['ids']
-        for id in ids_to_delete:
-            achievement_cmd = """SELECT * from achievement WHERE student_id=%s"""
-            achievement_params = (id)
-            achievement_row = db.execute_sql(achievement_cmd, achievement_params).fetchone()
-            if achievement_row:
-                return jsonify({'success': False, 'message': "存在该学生对应的成绩，请更改后再删除"})
-        # 构建 SQL 语句
-        placeholders = ', '.join(['%s'] * len(ids_to_delete))
-        cmd = f"DELETE FROM user WHERE id IN ({placeholders})"
-        result = db.execute_sql(cmd, ids_to_delete)
-    if result:
-        insert_audit_log(request.remote_addr, current_user.id, "用户管理", ('删除用户,id: %s' % ids_to_delete))
-        return jsonify({'success': True, 'message': "删除成功!"})
-    else:
-        return jsonify({'success': False, 'message': "删除失败!"})
+    data = request.get_json()
+    ids = data.get("ids", []) if isinstance(data.get("ids"), list) else [data.get("id")]
+    not_found_ids = []
+    for uid in ids:
+        cursor = db.execute_sql("SELECT username FROM user WHERE id = %s", (uid,))
+        user = cursor.fetchone()
+        if not user:
+            not_found_ids.append(uid)
+            continue
+        # 删除成绩记录
+        db.execute_sql("DELETE FROM achievement WHERE student_id = %s", (uid,))
+        # 删除学生的专业关系
+        db.execute_sql("DELETE FROM student_major WHERE student_id = %s", (uid,))
+        # 删除学生本身
+        db.execute_sql("DELETE FROM user WHERE id = %s", (uid,))
+    if not_found_ids:
+        insert_audit_log(request.remote_addr, current_user.id, "用户管理", ('删除用户,id: %s' % ids - not_found_ids))
+        return jsonify({"success": False, "message": f"以下用户不存在：{not_found_ids}，其他已删除"})
+    insert_audit_log(request.remote_addr, current_user.id, "用户管理", ('删除用户,id: %s' % ids))
+    return jsonify({'success': True, 'message': "删除成功!"})
+    # if 'id' in request.json:
+    #     achievement_cmd = """SELECT * from achievement WHERE student_id=%s"""
+    #     achievement_params = (request.json['id'])
+    #     achievement_row = db.execute_sql(achievement_cmd, achievement_params).fetchone()
+    #     if achievement_row:
+    #         return jsonify({'success': False, 'message': "存在该学生对应的成绩，请更改后再删除"})
+    #     cmd = "DELETE FROM user WHERE id=%s;"
+    #     result = db.execute_sql(cmd, request.json['id'])
+    #     ids_to_delete = request.json['id']
+    # elif 'ids' in request.json:
+    #     ids_to_delete = request.json['ids']
+    #     for id in ids_to_delete:
+    #         achievement_cmd = """SELECT * from achievement WHERE student_id=%s"""
+    #         achievement_params = (id)
+    #         achievement_row = db.execute_sql(achievement_cmd, achievement_params).fetchone()
+    #         if achievement_row:
+    #             return jsonify({'success': False, 'message': "存在该学生对应的成绩，请更改后再删除"})
+    #     # 构建 SQL 语句
+    #     placeholders = ', '.join(['%s'] * len(ids_to_delete))
+    #     cmd = f"DELETE FROM user WHERE id IN ({placeholders})"
+    #     result = db.execute_sql(cmd, ids_to_delete)
+    # if result:
+    #     insert_audit_log(request.remote_addr, current_user.id, "用户管理", ('删除用户,id: %s' % ids_to_delete))
+    #     return jsonify({'success': True, 'message': "删除成功!"})
+    # else:
+    #     return jsonify({'success': False, 'message': "删除失败!"})
 
 
 @user_bp.route('/user_center', methods=['GET', 'POST'])
@@ -411,7 +501,7 @@ def import_users():
     # 使用 pandas 读取上传的 Excel 文件流
     df = pd.read_excel(file)
     # 构建批量插入的 SQL 语句
-    values = []
+    added = 0
     for _, row in df.iterrows():
         if row['性别'] == '男':
             sex = 1
@@ -419,25 +509,41 @@ def import_users():
             sex = 0
         else:
             sex = 2
-        username = row['学号'] if pd.notna(row['学号']) else ''
+        username = str(row['学号']).strip() if pd.notna(row['学号']) else ''
+        if not username:
+            continue
+        cursor = db.execute_sql("SELECT id FROM user WHERE username = %s", (username,))
+        if cursor.fetchone():
+            continue
         name = row['姓名'] if pd.notna(row['姓名']) else ''
         email = row['邮箱'] if pd.notna(row['邮箱']) else ''
         hometown = row['籍贯'] if pd.notna(row['籍贯']) else ''
-        enrollment_date = row['入学时间'] if pd.notna(row['入学时间']) else 'NULL'
+        enrollment_date = row['入学时间'] if pd.notna(row['入学时间']) else None
         student_type = row['学生类别'] if pd.notna(row['学生类别']) else ''
-        major = row['专业'] if pd.notna(row['专业']) else ''
+        major_str = row['专业'] if pd.notna(row['专业']) else ''
         fellowship = row['团契'] if pd.notna(row['团契']) else ''
         phone = row['电话'] if pd.notna(row['电话']) else ''
         description = row['备注'] if pd.notna(row['备注']) else ''
-        values.append("('{}', '{}', '{}', '{}', {}, {}, '{}', {}, '{}', '{}', '{}', '{}', '{}', '{}')".format(
-            username, username, name, email, 3, 1, description, sex, hometown,
-            enrollment_date, student_type, major, fellowship, phone))
-    # 拼接成 SQL 语句
-    cmd = """INSERT INTO user (username,password,name,email,role_id,status,description,sex,hometown,
-                               enrollment_date,student_type,major,fellowship,phone) VALUES {};""".format(', '.join(values))
-    result = db.execute_sql(cmd)
-    if result:
-        insert_audit_log(request.remote_addr, current_user.id, "用户管理", '批量新增学生')
-        return jsonify({'success': True, 'message': "添加成功!"})
+        db.execute_sql("""
+            INSERT INTO user (username, password, name, email, role_id, status, description,
+                              sex, hometown, enrollment_date, student_type, fellowship, phone)
+            VALUES (%s, %s, %s, %s, 3, 1, %s, %s, %s, %s, %s, %s, %s)
+        """, (
+            username, username, name, email, description, sex, hometown,
+            enrollment_date, student_type, fellowship, phone
+        ))
+        cursor = db.execute_sql("SELECT id FROM user WHERE username = %s", (username,))
+        user_id = cursor.fetchone()['id']
+        # 专业处理
+        majors = [m.strip() for m in major_str.split(',') if m.strip()]
+        if majors:
+            cursor = db.execute_sql("SELECT id FROM major WHERE name IN %s", ((tuple(majors),)))
+            for m in cursor.fetchall():
+                db.execute_sql("INSERT INTO student_major (student_id, major_id) VALUES (%s, %s)", (user_id, m['id']))
+        added += 1
+
+    if added > 0:
+        insert_audit_log(request.remote_addr, current_user.id, "用户管理", f"批量新增学生 {added} 名")
+        return jsonify({'success': True, 'message': f"成功添加 {added} 名学生！"})
     else:
-        return jsonify({'success': False, 'message': "添加失败!"})
+        return jsonify({'success': False, 'message': "没有新增任何学生（可能已存在或数据不完整）"})

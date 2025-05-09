@@ -13,10 +13,11 @@ from exts import db
 from apps.audit.views import audit_bp
 from exts.logHandler import base_logger as logger
 from apps.course.views import course_bp
+from apps.major.views import major_bp
 from apps.notice.views import notice_bp
 from apps.permission.views import permission_bp
 from apps.role.views import role_bp
-from apps.teacher.view import teacher_bp
+from apps.teacher.views import teacher_bp
 from apps.user.views import user_bp, User
 from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_login import LoginManager, login_required, current_user
@@ -43,6 +44,7 @@ app.register_blueprint(notice_bp)
 app.register_blueprint(teacher_bp)
 app.register_blueprint(course_bp)
 app.register_blueprint(audit_bp)
+app.register_blueprint(major_bp)
 
 
 @app.before_request
